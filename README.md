@@ -1,6 +1,6 @@
 # Adetayo Tella · Portfolio
 
-Personal portfolio for **Adetayo Tella**, Computer Science student and aspiring AI/ML engineer.
+Personal portfolio for **Adetayo Tella**, Computer Science graduate and AI/ML engineer.
 Built around one positioning: *“I build intelligent systems and study how they work.”*
 
 Static site: **Astro 5 + TypeScript + Tailwind CSS 4**, zero client-side JavaScript except a
