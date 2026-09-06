@@ -6,10 +6,10 @@
 export const profile = {
   name: 'Adetayo Tella',
   firstName: 'Adetayo',
-  role: 'Computer Science student · aspiring AI/ML engineer',
+  role: 'Computer Science graduate · AI/ML engineer',
   statement: 'I build intelligent systems and study how they work.',
   support:
-    'Computer Science student focused on AI systems, machine learning, backend engineering, and research in ML and computer vision. Currently building LLM and retrieval applications, backend services, and CNN models.',
+    'Computer Science graduate focused on AI systems, machine learning, backend engineering, and research in ML and computer vision. Currently building LLM and retrieval applications, backend services, and CNN models.',
   education: {
     school: 'Federal University of Technology, Minna',
     degree: 'B.Tech, Computer Science',
@@ -23,9 +23,9 @@ export const profile = {
 } as const;
 
 export const site = {
-  title: 'Adetayo Tella · Computer Science Student & Aspiring AI/ML Engineer',
+  title: 'Adetayo Tella · Computer Science Graduate & AI/ML Engineer',
   description:
-    'Computer Science student and aspiring AI/ML engineer building intelligent systems, machine learning applications, and research-oriented software.',
+    'Computer Science graduate and AI/ML engineer building intelligent systems, machine learning applications, and research-oriented software.',
 } as const;
 
 export const nav = [
