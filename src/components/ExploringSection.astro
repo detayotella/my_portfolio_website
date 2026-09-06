@@ -1,0 +1,37 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { exploringColumns } from '../data/exploring';
+---
+
+<section id="research" class="mx-auto w-full max-w-5xl px-6 py-20">
+  <SectionHeading index="04" title="Currently Exploring" note="~/research · an engineer's notebook" />
+
+  <div class="grid gap-5 md:grid-cols-3">
+    {
+      exploringColumns.map((column) => (
+        <div data-reveal class="flex flex-col rounded-md border border-line bg-surface p-6">
+          <p class="font-mono text-[11px] text-accent-text">{column.path}</p>
+          <h3 class="mt-1 text-base font-semibold tracking-tight">{column.title}</h3>
+          <ul class="mt-4 divide-y divide-line">
+            {column.topics.map((topic) => (
+              <li class="py-2.5">
+                <p class="text-sm font-medium text-ink">{topic.name}</p>
+                <p class="mt-0.5 font-mono text-[11px] leading-relaxed text-ink-3">
+                  {topic.note}
+                </p>
+              </li>
+            ))}
+          </ul>
+          {column.footnote && (
+            <p
+              class="mt-auto border-t border-line pt-4 font-mono text-[10.5px] leading-relaxed text-ink-3"
+              aria-hidden="true"
+            >
+              {column.footnote}
+            </p>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</section>

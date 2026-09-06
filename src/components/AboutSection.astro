@@ -1,0 +1,57 @@
+---
+import SectionHeading from './SectionHeading.astro';
+import { profile } from '../data/profile';
+
+const facts = [
+  { term: 'education', value: `${profile.education.degree}`, sub: `${profile.education.school} · ${profile.education.period}` },
+  { term: 'focus', value: 'AI systems · ML · backend · computer vision', sub: 'the intersection I keep returning to' },
+  { term: 'currently', value: 'building RAG apps & backend services', sub: 'studying transformers & computer vision' },
+  { term: 'based in', value: profile.location, sub: 'open to remote work & collaboration' },
+];
+---
+
+<section id="about" class="mx-auto w-full max-w-5xl px-6 py-20">
+  <SectionHeading index="01" title="About" note="// theory ↔ implementation" />
+
+  <div class="grid gap-12 lg:grid-cols-[1.5fr_1fr]">
+    <div data-reveal class="space-y-5 text-base leading-relaxed text-ink-2">
+      <p>
+        I'm a Computer Science student at the {profile.education.school}, interested in how
+        intelligent software systems <strong class="font-medium text-ink">actually work</strong>,
+        not just how to call them. That runs in both directions: I'll study the mathematics behind
+        attention mechanisms, then turn around and build an application on top of an LLM or a
+        retrieval system.
+      </p>
+      <p>
+        Most of what I build sits at the intersection of AI systems and software engineering:
+        retrieval-augmented generation pipelines from document loading to grounded generation,
+        containerized backend services with an event-driven core, and convolutional networks
+        trained end to end in PyTorch.
+      </p>
+      <p>
+        I care about the layers underneath: backpropagation, gradient descent, attention
+        mechanics, database internals. Understanding the mechanism is what makes the abstraction
+        trustworthy.
+      </p>
+      <p class="pt-1 font-mono text-xs text-accent-text">
+        machine learning × software engineering × ai systems
+      </p>
+    </div>
+
+    <aside data-reveal class="h-fit border-l-2 border-line pl-6">
+      <dl class="space-y-6">
+        {
+          facts.map((fact) => (
+            <div>
+              <dt class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-3">
+                {fact.term}
+              </dt>
+              <dd class="mt-1 text-sm font-medium text-ink">{fact.value}</dd>
+              <dd class="mt-0.5 text-sm text-ink-2">{fact.sub}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </aside>
+  </div>
+</section>

@@ -1,0 +1,43 @@
+---
+title: "E-Commerce API"
+subtitle: "typescript · prisma · express"
+summary: "A full e-commerce REST API covering authentication, products, carts, orders, and addresses, with role-based access control, Zod validation at every boundary, and PostgreSQL behind Prisma."
+tags: ["TypeScript", "Express", "Prisma", "PostgreSQL", "JWT", "Zod"]
+order: 3
+links:
+  repo: "https://github.com/detayotella/e-commerce-API"
+---
+
+## What it does
+
+A complete commerce backend, organized around resources:
+
+- **Users** · registration and login with JWT-based authentication, plus ADMIN and USER roles enforced by middleware.
+- **Products** · full CRUD with writes restricted to admins, and a search endpoint for querying the catalog.
+- **Cart** · add products, update quantities, and remove items.
+- **Orders** · place an order from cart items, track its status and history, and cancel it.
+- **Addresses** · add, update, and list per-user delivery addresses.
+
+## How it's structured
+
+The codebase is layered deliberately:
+
+```
+src/
+├── controllers/    # request-handling logic
+├── routes/         # Express route definitions
+├── middlewares/    # authentication, role checks, logging
+├── schema/         # Zod validation schemas
+├── exceptions/     # custom error classes
+├── errorHandlers/  # centralized error handling
+└── secrets.ts      # environment variables, accessed in one place
+```
+
+Two choices I care about:
+
+- **Validate at the boundary.** Every request body passes through a Zod schema before it reaches a controller, so invalid data fails fast with a useful message instead of surfacing later as a database error.
+- **One door for secrets.** Environment access is centralized in a single module rather than scattered through the codebase.
+
+## Why it matters
+
+E-commerce is a good stress test for backend fundamentals: authorization that actually differs by role (a regular user must not reach admin routes), state that has to stay consistent as a cart becomes an order, and validation everywhere data enters. TypeScript end to end keeps the resource models checked at compile time, and Prisma migrations keep the PostgreSQL schema honest as it evolves.

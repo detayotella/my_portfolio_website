@@ -1,0 +1,132 @@
+---
+/**
+ * Utility page used ONCE to generate /og.png (1200×630 Open Graph card).
+ * It is screenshotted by the build tooling and then deleted from src/pages;
+ * keep it around only if you want to regenerate the card after edits.
+ */
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OG card</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #fafaf7;
+        background-image: radial-gradient(rgba(28, 25, 23, 0.09) 1.5px, transparent 1.5px);
+        background-size: 26px 26px;
+        font-family: "Inter Variable", system-ui, sans-serif;
+        color: #1c1917;
+        -webkit-font-smoothing: antialiased;
+      }
+      .frame {
+        box-sizing: border-box;
+        width: 1200px;
+        height: 630px;
+        padding: 64px 72px;
+        display: flex;
+        flex-direction: column;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: "JetBrains Mono Variable", monospace;
+        font-size: 24px;
+      }
+      .wordmark {
+        font-weight: 600;
+      }
+      .wordmark span {
+        color: #9a3412;
+      }
+      .cursor {
+        color: #ea580c;
+      }
+      .note {
+        color: #79716b;
+        font-size: 20px;
+      }
+      .middle {
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+      .statement {
+        display: flex;
+        gap: 34px;
+      }
+      .bar {
+        width: 8px;
+        border-radius: 4px;
+        background: #ea580c;
+      }
+      h1 {
+        margin: 0;
+        font-size: 84px;
+        line-height: 1.06;
+        letter-spacing: -0.025em;
+        font-weight: 650;
+        max-width: 950px;
+      }
+      .eyebrow {
+        font-family: "JetBrains Mono Variable", monospace;
+        font-size: 23px;
+        color: #57534e;
+        margin-bottom: 26px;
+      }
+      .eyebrow b {
+        color: #9a3412;
+        font-weight: 500;
+      }
+      .bottombar {
+        border-top: 1px solid #e0dedb;
+        padding-top: 28px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        font-family: "JetBrains Mono Variable", monospace;
+        font-size: 22px;
+      }
+      .interests {
+        color: #9a3412;
+      }
+      .meta {
+        color: #79716b;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <div class="topbar">
+        <span class="wordmark">adetayo<span>.</span>tella<span class="cursor">_</span></span>
+        <span class="note">// portfolio</span>
+      </div>
+      <div class="middle">
+        <div class="statement">
+          <div class="bar"></div>
+          <div>
+            <p class="eyebrow"><b>$</b> whoami — computer science @ fut minna</p>
+            <h1>I build intelligent systems and study how they work.</h1>
+          </div>
+        </div>
+      </div>
+      <div class="bottombar">
+        <span class="interests">machine learning × software engineering × ai systems</span>
+        <span class="meta">adetayo tella · nigeria</span>
+      </div>
+    </div>
+  </body>
+</html>

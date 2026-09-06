@@ -1,0 +1,40 @@
+---
+import { profile } from '../data/profile';
+import TerminalCard from './TerminalCard.astro';
+---
+
+<section class="relative overflow-hidden">
+  <div
+    class="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative mx-auto w-full max-w-5xl px-6 pb-20 pt-14 sm:pt-20 lg:pb-24">
+    <div class="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+      <div>
+        <p class="font-mono text-xs text-ink-3 sm:text-sm">
+          <span class="text-accent-text">$</span>
+          {profile.name.toLowerCase()} · computer science @ fut minna
+        </p>
+        <h1 class="mt-5 max-w-xl text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl">
+          {profile.statement}
+        </h1>
+        <p class="mt-6 max-w-lg text-base leading-relaxed text-ink-2">
+          {profile.support}
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href="/#projects" class="btn btn-primary">View projects</a>
+          <a
+            href={profile.github}
+            class="btn btn-secondary"
+            target="_blank"
+            rel="noopener noreferrer">GitHub ↗</a
+          >
+          <a href="/#contact" class="btn btn-secondary">Contact</a>
+        </div>
+      </div>
+      <TerminalCard />
+    </div>
+  </div>
+</section>

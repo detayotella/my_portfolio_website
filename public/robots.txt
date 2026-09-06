@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: once the production domain is set in astro.config.mjs,
+# add:  Sitemap: https://your-domain/sitemap-index.xml  (with @astrojs/sitemap)

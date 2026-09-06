@@ -1,0 +1,108 @@
+---
+/**
+ * Hand-drawn technical schematic (SVG) of the retrieval-augmented generation
+ * pipeline, used in the featured project block and the LangChain case study.
+ * Pure SVG + CSS variables so it follows the light/dark theme automatically.
+ */
+interface Props {
+  variant: 'rag';
+  caption?: string;
+}
+
+const { variant, caption } = Astro.props;
+
+const title =
+  'The retrieval-augmented generation pipeline: indexing (documents, loading, splitting, embeddings, vector store) and query time (retrieval, context, LLM, grounded response).';
+---
+
+<figure>
+  <svg
+    viewBox="0 0 560 240"
+    class="h-auto w-full"
+    role="img"
+    style="font-family: var(--font-mono);"
+  >
+    <title>{title}</title>
+    <defs>
+      <marker id={`${variant}-arrow`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3, #79716b)"></path>
+      </marker>
+      <marker id={`${variant}-arrow-accent`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="var(--accent, #ea580c)"></path>
+      </marker>
+    </defs>
+
+    <g stroke-width="1">
+      <text x="20" y="16" font-size="8.5" fill="var(--ink-3, #79716b)">indexing time</text>
+      <text x="20" y="140" font-size="8.5" fill="var(--ink-3, #79716b)">query time</text>
+
+      {/* top row: ingestion */}
+      <rect x="20" y="28" width="88" height="48" rx="3" fill="var(--surface, #fff)" stroke="var(--line-strong, #d5d2cf)" />
+      <text x="64" y="48" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink, #1c1917)">documents</text>
+      <text x="64" y="63" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">pdf files</text>
+
+      <rect x="128" y="28" width="88" height="48" rx="3" fill="var(--surface, #fff)" stroke="var(--line-strong, #d5d2cf)" />
+      <text x="172" y="48" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink, #1c1917)">load</text>
+      <text x="172" y="63" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">langchain loaders</text>
+
+      <rect x="236" y="28" width="88" height="48" rx="3" fill="var(--surface, #fff)" stroke="var(--line-strong, #d5d2cf)" />
+      <text x="280" y="48" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink, #1c1917)">split</text>
+      <text x="280" y="63" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">pdf → chunks</text>
+
+      <rect x="344" y="28" width="88" height="48" rx="3" fill="var(--surface, #fff)" stroke="var(--line-strong, #d5d2cf)" />
+      <text x="388" y="48" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink, #1c1917)">embed</text>
+      <text x="388" y="63" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">sentence-transformers</text>
+
+      <rect x="452" y="28" width="88" height="48" rx="3" fill="var(--accent-soft, #ffedd5)" stroke="var(--accent, #ea580c)" />
+      <text x="496" y="48" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--accent-text, #9a3412)">vector store</text>
+      <text x="496" y="63" text-anchor="middle" font-size="8.5" fill="var(--ink-2, #57534e)">chroma</text>
+
+      <line x1="108" y1="52" x2="124" y2="52" stroke="var(--ink-3, #79716b)" marker-end="url(#rag-arrow)" />
+      <line x1="216" y1="52" x2="232" y2="52" stroke="var(--ink-3, #79716b)" marker-end="url(#rag-arrow)" />
+      <line x1="324" y1="52" x2="340" y2="52" stroke="var(--ink-3, #79716b)" marker-end="url(#rag-arrow)" />
+      <line x1="432" y1="52" x2="448" y2="52" stroke="var(--ink-3, #79716b)" marker-end="url(#rag-arrow)" />
+
+      {/* vector store → retrieve */}
+      <path
+        d="M 496,76 V 112 Q 496,120 488,120 H 180 Q 172,120 172,128 V 142"
+        fill="none"
+        stroke="var(--accent, #ea580c)"
+        marker-end="url(#rag-arrow-accent)"
+      />
+      <text x="340" y="113" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">top-k</text>
+
+      {/* bottom row: query */}
+      <rect x="20" y="148" width="88" height="48" rx="3" fill="var(--surface, #fff)" stroke="var(--line-strong, #d5d2cf)" />
+      <text x="64" y="168" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink, #1c1917)">query</text>
+      <text x="64" y="183" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">user question</text>
+
+      <rect x="128" y="148" width="88" height="48" rx="3" fill="var(--accent-soft, #ffedd5)" stroke="var(--accent, #ea580c)" />
+      <text x="172" y="168" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--accent-text, #9a3412)">retrieve</text>
+      <text x="172" y="183" text-anchor="middle" font-size="8.5" fill="var(--ink-2, #57534e)">mmr retrieval</text>
+
+      <rect x="236" y="148" width="88" height="48" rx="3" fill="var(--surface, #fff)" stroke="var(--line-strong, #d5d2cf)" />
+      <text x="280" y="168" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink, #1c1917)">context</text>
+      <text x="280" y="183" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">prompt assembly</text>
+
+      <rect x="344" y="148" width="88" height="48" rx="3" fill="var(--surface, #fff)" stroke="var(--line-strong, #d5d2cf)" />
+      <text x="388" y="168" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink, #1c1917)">llm</text>
+      <text x="388" y="183" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">groq · gemini</text>
+
+      <rect x="452" y="148" width="88" height="48" rx="3" fill="var(--surface, #fff)" stroke="var(--line-strong, #d5d2cf)" />
+      <text x="496" y="168" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--ink, #1c1917)">response</text>
+      <text x="496" y="183" text-anchor="middle" font-size="8.5" fill="var(--ink-3, #79716b)">grounded answer</text>
+
+      <line x1="108" y1="172" x2="124" y2="172" stroke="var(--ink-3, #79716b)" marker-end="url(#rag-arrow)" />
+      <line x1="216" y1="172" x2="232" y2="172" stroke="var(--ink-3, #79716b)" marker-end="url(#rag-arrow)" />
+      <line x1="324" y1="172" x2="340" y2="172" stroke="var(--ink-3, #79716b)" marker-end="url(#rag-arrow)" />
+      <line x1="432" y1="172" x2="448" y2="172" stroke="var(--ink-3, #79716b)" marker-end="url(#rag-arrow)" />
+    </g>
+  </svg>
+  {
+    caption && (
+      <figcaption class="mt-3 font-mono text-[11px] leading-relaxed text-ink-3">
+        {caption}
+      </figcaption>
+    )
+  }
+</figure>

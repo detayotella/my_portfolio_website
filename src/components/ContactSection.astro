@@ -1,0 +1,31 @@
+---
+import { profile } from '../data/profile';
+---
+
+<section id="contact" class="mx-auto w-full max-w-5xl px-6 py-24">
+  <div data-reveal class="border-t border-line pt-14">
+    <p class="font-mono text-xs text-ink-3" aria-hidden="true">// open channel</p>
+    <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+      Let's build something interesting.
+    </h2>
+    <p class="mt-4 max-w-lg text-base leading-relaxed text-ink-2">
+      Whether it's an internship, a research question, or an interesting bug, the fastest way to
+      reach me is email. I'm also on GitHub and LinkedIn.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a class="btn btn-primary" href={`mailto:${profile.email}`}>Email me</a>
+      <a
+        class="btn btn-secondary"
+        href={profile.github}
+        target="_blank"
+        rel="noopener noreferrer">GitHub ↗</a
+      >
+      <a
+        class="btn btn-secondary"
+        href={profile.linkedin}
+        target="_blank"
+        rel="noopener noreferrer">LinkedIn ↗</a
+      >
+    </div>
+  </div>
+</section>

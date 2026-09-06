@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import Hero from '../components/Hero.astro';
+import AboutSection from '../components/AboutSection.astro';
+import ProjectsSection from '../components/ProjectsSection.astro';
+import SkillsSection from '../components/SkillsSection.astro';
+import ExploringSection from '../components/ExploringSection.astro';
+import ExperienceSection from '../components/ExperienceSection.astro';
+import ContactSection from '../components/ContactSection.astro';
+---
+
+<Base>
+  <SiteHeader />
+  <main id="main">
+    <Hero />
+    <AboutSection />
+    <ProjectsSection />
+    <SkillsSection />
+    <ExploringSection />
+    <ExperienceSection />
+    <ContactSection />
+  </main>
+  <SiteFooter />
+</Base>

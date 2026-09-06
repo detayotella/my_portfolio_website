@@ -1,0 +1,77 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import Tag from '../../components/Tag.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const others = (await getCollection('projects'))
+  .filter((p) => p.id !== project.id)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base title={`${project.data.title} · Adetayo Tella`} description={project.data.summary}>
+  <SiteHeader />
+  <main id="main" class="mx-auto w-full max-w-3xl px-6 py-14 sm:py-16">
+    <nav class="font-mono text-xs text-ink-3" aria-label="Breadcrumb">
+      <a href="/#projects" class="transition-colors hover:text-ink">~/projects</a>
+      <span aria-hidden="true"> / </span>
+      <span class="text-ink-2">{project.id}</span>
+    </nav>
+
+    <header class="mt-8">
+      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">{project.data.title}</h1>
+      {
+        project.data.subtitle && (
+          <p class="mt-2 font-mono text-xs text-ink-3" aria-hidden="true">
+            {project.data.subtitle}
+          </p>
+        )
+      }
+      <p class="mt-5 text-base leading-relaxed text-ink-2">{project.data.summary}</p>
+      <div class="mt-5 flex flex-wrap gap-1.5">
+        {project.data.tags.map((tag) => <Tag label={tag} />)}
+      </div>
+      {
+        project.data.links?.repo && (
+          <a
+            class="link mt-5 inline-block text-sm font-medium"
+            href={project.data.links.repo}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View repository ↗
+          </a>
+        )
+      }
+    </header>
+
+    <article class="case mt-12">
+      <Content />
+    </article>
+
+    <nav class="mt-16 border-t border-line pt-8" aria-label="More projects">
+      <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-3">more projects</p>
+      <ul class="mt-4 space-y-2.5">
+        {
+          others.map((other) => (
+            <li>
+              <a class="link text-sm" href={`/projects/${other.id}/`}>
+                {other.data.title} →
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </main>
+  <SiteFooter />
+</Base>

@@ -1,0 +1,53 @@
+---
+title: "LangChain Mini-Projects"
+subtitle: "rag & llm applications"
+summary: "Five RAG variants of increasing complexity, an LLM-as-judge evaluation loop, and an interactive blog generator, built to understand the retrieval pipeline end to end rather than to call a library."
+tags: ["Python", "LangChain", "Chroma", "sentence-transformers", "Groq", "Gemini", "Streamlit", "uv"]
+featured: true
+order: 1
+links:
+  repo: "https://github.com/detayotella/langchain_projects"
+---
+
+import SchematicSVG from '../../components/SchematicSVG.astro';
+
+## Why the pipeline matters
+
+It's easy to say "I use LangChain." It's more useful to understand what happens between a document and an answer:
+
+```
+documents → loading → splitting → embeddings → vector store
+          → retrieval → context → LLM → response
+```
+
+Every stage is a design decision. Chunk size trades context against precision. The embedding model defines what "similar" means. Retrieval quality bounds answer quality: no prompt can recover a document that was never fetched. I approach RAG as a system with measurable stages, not a library call.
+
+<SchematicSVG variant="rag" caption="fig 01 - the retrieval-augmented generation pipeline as I build it: ingestion at indexing time (top), query-time retrieval and grounded generation (bottom)." />
+
+## What I built
+
+Five RAG variants, each isolating one idea:
+
+- **basic rag** · the minimal pipeline: load a PDF, chunk it, embed with sentence-transformers, index in Chroma, retrieve with MMR, and answer through an LCEL chain.
+- **explainable rag** · the same pipeline plus receipts: every answer ships with the retrieved chunks and their page numbers.
+- **memory rag** · conversational RAG that keeps chat history in memory through a MessagesPlaceholder.
+- **multi-document memory rag** · indexes every PDF in a folder and attributes each answer to its source document.
+- **database-memory rag** · a Streamlit chat app whose RAG conversation history persists in SQLite across sessions.
+
+Then two supporting applications:
+
+- **LLM-as-judge** · one script generates answers to a question set, and a judge script scores each answer with a second LLM using structured output (a Pydantic model through with_structured_output): an accuracy score, a hallucination flag, and written feedback. Answers that fall below the threshold are regenerated, up to a maximum number of attempts.
+- **blog generator** · a CLI chat loop that drafts a post about any topic with Gemini and keeps conversation history, so follow-up instructions revise the previous draft instead of restarting.
+
+## Engineering choices
+
+- **One reproducible environment.** Everything runs from a single uv-managed environment with a committed lockfile, so `uv sync` reproduces it exactly.
+- **Free-tier hosted models.** Groq and Google Gemini serve the LLM calls; embeddings run locally through sentence-transformers (all-MiniLM-L6-v2), with Chroma as the vector store.
+- **CPU-only torch.** PyTorch comes from the CPU wheel index, so the whole repo runs without any CUDA setup.
+
+## What it demonstrates
+
+- Treating RAG as a pipeline with inspectable stages rather than a single abstraction.
+- Evaluation as a habit: a judge loop that turns "the answer feels better" into scores, flags, and feedback.
+- Grounding and attribution: citations, page numbers, and per-document sources.
+- Persistence: conversation memory that survives a restart, not just a list in RAM.

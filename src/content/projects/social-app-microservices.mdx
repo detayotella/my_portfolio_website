@@ -1,0 +1,43 @@
+---
+title: "Social App Microservices"
+subtitle: "event-driven backend"
+summary: "A social media backend split into five containerized services (API gateway, identity, posts, media, search) that communicate through RabbitMQ events, with MongoDB storage and Redis-cached search."
+tags: ["Node.js", "Express", "MongoDB", "RabbitMQ", "Redis", "Docker", "Jest"]
+order: 2
+links:
+  repo: "https://github.com/detayotella/social-app-microservices"
+---
+
+## The problem
+
+A monolithic backend couples everything to everything: a media failure can take down authentication, search scales with the entire app, and every deploy carries the whole system's risk. This project splits a social product into services that fail, scale, and deploy independently.
+
+## Five services
+
+- **API gateway** · the single entry point for clients; routes each request to the right service.
+- **Identity** · registration, login, and authorization; manages user profiles and sessions.
+- **Posts** · creates and deletes posts, publishing an event each time either happens.
+- **Media** · handles uploads and deletions, and listens for `post.deleted` events to clean up the files attached to a removed post.
+- **Search** · full-text search over posts using MongoDB text indexes, with Redis caching in front for repeat queries.
+
+## The event-driven core
+
+Services don't call each other directly; they communicate through RabbitMQ:
+
+| Event | What happens next |
+| --- | --- |
+| `post.created` | the search service indexes the new post |
+| `post.deleted` | the media service deletes associated files; search entries are removed |
+
+Producers publish and move on. Consumers react at their own pace. Adding a feature that reacts to a post (say, notifications) means adding a subscriber, not editing the post service.
+
+## Running it
+
+The whole stack is containerized: `docker-compose up --build` brings up the five services alongside RabbitMQ, MongoDB, and Redis, with the RabbitMQ management UI making the event flow observable. Each service carries its own Jest suite, so tests run at the same granularity as deployment.
+
+## What it demonstrates
+
+- Decomposing a product by responsibility, not by layer.
+- Event-driven design: asynchronous communication, eventual cleanup, and subscribers that stay decoupled from producers.
+- Caching as a first-class concern, not an afterthought.
+- Testing and containerization as defaults for every service.

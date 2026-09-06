@@ -1,0 +1,36 @@
+---
+title: "CIFAR-10 Image Classification"
+subtitle: "pytorch cnn"
+summary: "A convolutional neural network built and trained from scratch in PyTorch to classify the CIFAR-10 dataset: 60,000 color images across ten classes, from data loading through training to single-image inference."
+tags: ["Python", "PyTorch", "Torchvision", "Computer Vision", "CNN"]
+order: 4
+links:
+  repo: "https://github.com/detayotella/Cifar-10"
+---
+
+## The dataset
+
+CIFAR-10 is the classic computer-vision benchmark: 60,000 color images at 32×32 pixels, evenly split across ten classes (airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck) with 6,000 images per class. It loads directly through torchvision, so the effort goes into the model, not the plumbing.
+
+## The model
+
+A convolutional network written from scratch in PyTorch, three conv blocks deep:
+
+- **conv block 1** · 3 → 32 → 64 channels, ReLU activations, max pooling
+- **conv block 2** · 64 → 128 → 128 channels, max pooling
+- **conv block 3** · 128 → 256 → 256 channels, max pooling
+- **classifier** · flatten, then fully connected layers 1024 → 512 → 10
+
+Each block widens the channel capacity as spatial resolution shrinks; the pooling layers do the shrinking and buy a degree of translation tolerance along the way.
+
+## Training
+
+A deliberate, standard setup: CrossEntropyLoss over the ten classes, the Adam optimizer at a learning rate of 1e-3, training and test splits evaluated each epoch, and fixed torch seeds so runs stay comparable. The trained model is saved to disk for reuse.
+
+## Inference
+
+Prediction is a single forward pass under `torch.inference_mode()`: a 32×32 image goes in, ten logits come out, softmax turns them into class probabilities, and argmax picks the label.
+
+## Why from scratch
+
+No pretrained backbone. Training my own CNN on a benchmark with known baselines makes the mechanics visible: what convolutions actually learn, why pooling helps, where overfitting starts, and how much signal 32×32 pixels really carry.

@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<Base title="404 · Page not found">
+  <SiteHeader />
+  <main id="main" class="mx-auto flex w-full max-w-5xl flex-col px-6 py-32">
+    <p class="font-mono text-sm text-ink-2">
+      <span class="text-accent-text">$</span> open ./this-page
+    </p>
+    <p class="mt-3 font-mono text-sm text-ink-3">error 404 · no such file or directory</p>
+    <p class="mt-8">
+      <a href="/" class="btn btn-primary">← Back home</a>
+    </p>
+  </main>
+  <SiteFooter />
+</Base>
