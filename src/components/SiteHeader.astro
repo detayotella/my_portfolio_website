@@ -16,6 +16,7 @@ import { nav } from '../data/profile';
     >
       <a
         href="/"
+        aria-label="Adetayo Tella, home"
         class="rounded font-display text-[15px] font-semibold tracking-tight text-ink transition-transform duration-150 ease-out active:scale-[0.97]"
       >
         adetayo<span class="text-accent-text">.</span>tella<span class="cursor-blink text-accent">_</span>
@@ -24,11 +25,11 @@ import { nav } from '../data/profile';
       <nav class="hidden items-center gap-1 md:flex" aria-label="Primary">
         {
           nav.map((item) => (
-            <a
-              href={item.href}
-              data-spy
-              class="rounded-md px-3 py-2 text-sm text-ink-2 transition-colors duration-150 ease-out hover:bg-ink/[0.04] hover:text-ink aria-current:bg-ink/10 aria-current:text-ink"
-            >
+      <a
+        href={item.href}
+        data-spy
+        class="aria-current:bg-ink/10 aria-current:text-ink rounded-md px-3 py-2 text-sm text-ink-2 transition-colors duration-150 ease-out hover:bg-ink/[0.04] hover:text-ink"
+      >
               {item.label}
             </a>
           ))
@@ -116,7 +117,16 @@ import { nav } from '../data/profile';
     shell?.classList.toggle('shadow-[var(--shadow-card)]', detached);
     header?.classList.toggle('pb-3', detached);
   };
-  const sync = () => setDetached(window.scrollY > 12);
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const sync = () => {
+    if (reduceMotion.matches && shell) {
+      // under reduced motion the glass swap still happens, minus the transition
+      shell.style.transition = 'none';
+    } else {
+      shell?.style.removeProperty('transition');
+    }
+    setDetached(window.scrollY > 12);
+  };
   sync();
   window.addEventListener('scroll', sync, { passive: true });
 
