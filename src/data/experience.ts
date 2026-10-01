@@ -14,6 +14,17 @@ export interface ExperienceEntry {
 
 export const experience: ExperienceEntry[] = [
   {
+    role: 'Backend Developer Intern',
+    org: 'CamelCase Technologies',
+    location: 'Ikorodu, Lagos, Nigeria',
+    period: 'Jan 2025 - Feb 2025',
+    points: [
+      'Designed and executed tests using Pytest and FastAPI test utilities, achieving 95%+ coverage.',
+      'Implemented Open Graph metadata to boost user engagement on social platforms.',
+    ],
+    tags: ['Pytest', 'FastAPI', 'Testing', 'Open Graph'],
+  },
+  {
     role: 'Data Scientist Intern',
     org: 'Explore AI',
     location: 'South Africa',
@@ -30,8 +41,8 @@ export const experience: ExperienceEntry[] = [
 export const education = {
   degree: 'B.Tech, Computer Science',
   school: 'Federal University of Technology, Minna',
-  period: '2021 - 2026 (expected)',
-  note: 'Studying the fundamentals of systems, databases, and algorithms while building the applied half of the education in public, on this page.',
+  period: '2021 - 2026',
+  note: 'Four years of systems, databases, and algorithms, with the applied half of the education built in public, on this page.',
 } as const;
 
 export const certifications = [
