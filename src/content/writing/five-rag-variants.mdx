@@ -1,0 +1,32 @@
+---
+title: "What five RAG variants taught me about retrieval"
+description: "Notes from building the same retrieval pipeline five times, each variant isolating one design decision: chunking, explainability, memory, multi-document grounding, and persistence."
+pubDate: 2026-09-18
+tags: ["RAG", "LangChain", "Embeddings", "Evaluation"]
+---
+
+Retrieval-augmented generation sounds like one technique. After building five variants of the same pipeline, each isolating one idea, I've started to see it as a chain of small decisions that each quietly shape the answers.
+
+## The baseline
+
+The minimal pipeline: load a PDF, chunk it, embed the chunks with sentence-transformers, index them in Chroma, retrieve with MMR, and answer through an LCEL chain. Getting this running takes an afternoon. What takes longer is noticing how much each stage is a design decision rather than plumbing.
+
+Chunk size is the clearest example. A large chunk keeps context but blurs which part of it mattered. A small chunk is precise but can strip away the sentence an answer depends on. There is no correct value, only a trade you make consciously.
+
+## From answers to answers with receipts
+
+The second variant adds explainability: every answer ships with the chunks that produced it, including page numbers. This changed how I tested the system. Once the retrieved context is visible, a wrong answer becomes diagnosable. Was the right document fetched? If not, retrieval is broken. If yes, the prompt or the model is.
+
+Retrieval quality bounds answer quality. No prompt can recover a document that was never fetched, and no clever prompt engineering fixes a bad embedding choice. That single sentence is worth most of what I know about RAG debugging.
+
+## Memory, sources, persistence
+
+The third and fourth variants handle conversation history and multi-document grounding. Chat memory is easy to add and easy to get wrong: without careful history management, a follow-up question quietly retrieves against the wrong mental model of the conversation. Multi-document grounding attributes each answer to its source, which turns "the model said so" into "page 12 of the second PDF says so".
+
+The fifth variant persists that history in SQLite behind a Streamlit app, so a conversation survives a restart. It is the least glamorous variant and the one that made the others feel like products instead of demos.
+
+## Judging the output
+
+The most useful code in the repository is not a RAG variant. It is the LLM-as-judge loop: one script generates answers to a fixed question set, a judge script scores each answer with a second LLM using structured output (an accuracy score, a hallucination flag, and written feedback through a Pydantic model), and answers below the threshold get regenerated up to a limit.
+
+Evaluation turned "the answer feels better" into numbers I could compare across variants. It also made regressions obvious the moment they appeared. If I recommend one habit from this project, it is building the judge before adding a sixth variant.
