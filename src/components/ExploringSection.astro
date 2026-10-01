@@ -1,37 +1,76 @@
 ---
 import SectionHeading from './SectionHeading.astro';
 import { exploringColumns } from '../data/exploring';
+
+// full-width lead notebook, then a 2-column row for the rest. Every row height
+// is set by its own content, so no card stretches into a void; the bento rule
+// (3 items -> 3 cells, each sized to its content) stays intact.
+const [lead, ...rest] = exploringColumns;
 ---
 
 <section id="research" class="mx-auto w-full max-w-5xl px-6 py-20">
-  <SectionHeading index="04" title="Currently Exploring" note="~/research · an engineer's notebook" />
+  <SectionHeading title="Currently Exploring" />
 
-  <div class="grid gap-5 md:grid-cols-3">
-    {
-      exploringColumns.map((column) => (
-        <div data-reveal class="flex flex-col rounded-md border border-line bg-surface p-6">
-          <p class="font-mono text-[11px] text-accent-text">{column.path}</p>
-          <h3 class="mt-1 text-base font-semibold tracking-tight">{column.title}</h3>
-          <ul class="mt-4 divide-y divide-line">
-            {column.topics.map((topic) => (
-              <li class="py-2.5">
-                <p class="text-sm font-medium text-ink">{topic.name}</p>
-                <p class="mt-0.5 font-mono text-[11px] leading-relaxed text-ink-3">
-                  {topic.note}
-                </p>
-              </li>
-            ))}
-          </ul>
-          {column.footnote && (
-            <p
-              class="mt-auto border-t border-line pt-4 font-mono text-[10.5px] leading-relaxed text-ink-3"
-              aria-hidden="true"
-            >
-              {column.footnote}
-            </p>
-          )}
-        </div>
-      ))
-    }
+  <div data-reveal-group class="grid gap-5">
+    <article
+      data-reveal-child
+      class="lift flex flex-col rounded-xl border border-line bg-surface p-6 sm:p-8"
+    >
+      <p class="font-mono text-[11px] text-accent-text">{lead.path}</p>
+      <h3 class="mt-1 font-display text-xl font-semibold tracking-tight">{lead.title}</h3>
+      <ul class="mt-4 grid gap-x-10 sm:grid-cols-2">
+        {
+          lead.topics.map((topic) => (
+            <li class="border-b border-line py-2.5 last:border-b-0 sm:[&:nth-last-child(2)]:border-b-0">
+              <p class="text-sm font-medium text-ink">{topic.name}</p>
+              <p class="mt-0.5 font-mono text-[11px] leading-relaxed text-ink-3">
+                {topic.note}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+      {
+        lead.footnote && (
+          <p
+            class="mt-6 border-t border-line pt-4 font-mono text-[10.5px] leading-relaxed text-ink-3"
+            aria-hidden="true"
+          >
+            {lead.footnote}
+          </p>
+        )
+      }
+    </article>
+
+    <div class="grid gap-5 md:grid-cols-2">
+      {
+        rest.map((column) => (
+          <article data-reveal-child class="lift flex flex-col rounded-xl border border-line bg-surface p-6">
+            <p class="font-mono text-[11px] text-accent-text">{column.path}</p>
+            <h3 class="mt-1 font-display text-base font-semibold tracking-tight">
+              {column.title}
+            </h3>
+            <ul class="mt-4">
+              {column.topics.map((topic) => (
+                <li class="border-b border-line py-2.5 last:border-b-0">
+                  <p class="text-sm font-medium text-ink">{topic.name}</p>
+                  <p class="mt-0.5 font-mono text-[11px] leading-relaxed text-ink-3">
+                    {topic.note}
+                  </p>
+                </li>
+              ))}
+            </ul>
+            {column.footnote && (
+              <p
+                class="mt-auto border-t border-line pt-3.5 font-mono text-[10.5px] leading-relaxed text-ink-3"
+                aria-hidden="true"
+              >
+                {column.footnote}
+              </p>
+            )}
+          </article>
+        ))
+      }
+    </div>
   </div>
 </section>
