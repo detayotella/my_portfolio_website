@@ -1,5 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import Tag from './Tag.astro';
 
 interface Props {
@@ -9,15 +11,38 @@ interface Props {
 }
 
 const { project, index = 0, class: className = '' } = Astro.props;
+
+// images live in src/assets/projects/, referenced by filename in frontmatter
+const images = import.meta.glob<{ default: ImageMetadata }>('../assets/projects/*.png', {
+  eager: true,
+});
+const image = project.data.image ? images[`../assets/projects/${project.data.image}`]?.default : null;
 ---
 
 <article
   data-reveal-child
   class:list={[
-    'lift group flex flex-col rounded-xl border border-line bg-surface p-6',
+    'lift group relative flex flex-col overflow-hidden rounded-xl border border-line bg-surface p-6',
     className,
   ]}
 >
+  {
+    image && (
+      <div class="-mx-6 -mt-6 mb-5 overflow-hidden border-b border-line">
+        <Image
+          src={image}
+          alt={project.data.imageAlt || `Repository view of ${project.data.title}`}
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 768px) 33vw, 100vw"
+          loading="lazy"
+          decoding="async"
+          format="webp"
+          quality={80}
+          class="h-auto w-full"
+        />
+      </div>
+    )
+  }
   <p class="font-mono text-[11px] text-ink-3" aria-hidden="true">
     p.{String(index || project.data.order).padStart(2, '0')}
   </p>
