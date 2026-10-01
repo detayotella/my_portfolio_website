@@ -1,13 +1,22 @@
 ---
 import { getCollection } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import SectionHeading from './SectionHeading.astro';
 import ProjectCard from './ProjectCard.astro';
 import SchematicSVG from './SchematicSVG.astro';
+import ScreenshotFrame from './ScreenshotFrame.astro';
 import Tag from './Tag.astro';
 
 const entries = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const featured = entries.find((e) => e.data.featured);
 const rest = entries.filter((e) => e.data.featured !== true);
+
+const featuredImages = import.meta.glob<{ default: ImageMetadata }>('../assets/projects/*.png', {
+  eager: true,
+});
+const featuredImage = featured?.data.image
+  ? featuredImages[`../assets/projects/${featured.data.image}`]?.default
+  : null;
 ---
 
 <section id="projects" class="mx-auto w-full max-w-5xl px-6 py-20">
@@ -72,9 +81,19 @@ const rest = entries.filter((e) => e.data.featured !== true);
           </div>
         </div>
 
-        <div class="flex flex-col justify-center">
+        <div class="flex flex-col justify-center gap-6">
           <SchematicSVG variant="rag" />
-          <p class="mt-3 font-mono text-[11px] leading-relaxed text-ink-3" aria-hidden="true">
+          {
+            featuredImage && featured.data.links?.repo && (
+              <ScreenshotFrame
+                src={featuredImage}
+                alt={featured.data.imageAlt || `Repository view of ${featured.data.title}`}
+                url={`github.com/detayotella/${featured.data.links.repo.split('/').pop()}`}
+                class="shadow-[var(--shadow-card)]"
+              />
+            )
+          }
+          <p class="font-mono text-[11px] leading-relaxed text-ink-3" aria-hidden="true">
             // fig 01 - the rag pipeline: ingestion at index time, retrieval and grounded
             generation at query time
           </p>
