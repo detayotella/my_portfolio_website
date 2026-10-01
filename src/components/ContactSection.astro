@@ -67,54 +67,57 @@ import { profile } from '../data/profile';
   </div>
 </section>
 
-<script>
-  const copyBtn = document.getElementById('email-copy');
-  const label = copyBtn?.querySelector('[data-copy-label]');
-  const icon = copyBtn?.querySelector('[data-copy-icon]');
+<script is:inline>
+  // idempotent: re-called from Base's astro:page-load listener after navigations
+  window.__initContact = function () {
+    const copyBtn = document.getElementById('email-copy');
+    if (!copyBtn) return; // not on a page with the contact section
+    const label = copyBtn.querySelector('[data-copy-label]');
+    if (!label) return;
+    const icon = copyBtn.querySelector('[data-copy-icon]');
 
-  const copy = async () => {
-    if (!copyBtn || !label) return;
-    const email = copyBtn.getAttribute('data-email') || '';
-    let copied = false;
-    try {
-      await navigator.clipboard.writeText(email);
-      copied = true;
-    } catch {
-      // clipboard API unavailable (permissions/insecure context): legacy fallback
-      const ta = document.createElement('textarea');
-      ta.value = email;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      // cast: execCommand is deprecated, but it is the standard legacy fallback here
-      const legacyCopy = document as unknown as { execCommand: (cmd: string) => boolean };
+    const copy = async () => {
+      const email = copyBtn.getAttribute('data-email') || '';
+      let copied = false;
       try {
-        copied = legacyCopy.execCommand('copy');
+        await navigator.clipboard.writeText(email);
+        copied = true;
       } catch {
-        copied = false;
+        // clipboard API unavailable (permissions/insecure context): legacy fallback
+        const ta = document.createElement('textarea');
+        ta.value = email;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        // execCommand is deprecated, but it is the standard legacy fallback here
+        try {
+          copied = /** @type {any} */ (document).execCommand('copy');
+        } catch {
+          copied = false;
+        }
+        ta.remove();
       }
-      ta.remove();
-    }
-    if (!copied) {
-      // last resort: hand off to the mail client
-      window.location.href = `mailto:${email}`;
-      return;
-    }
-    const original = label.textContent;
-    label.textContent = 'copied to clipboard';
-    icon?.classList.add('hidden');
-    window.setTimeout(() => {
-      label.textContent = original;
-      icon?.classList.remove('hidden');
-    }, 1600);
-  };
+      if (!copied) {
+        // last resort: hand off to the mail client
+        window.location.href = `mailto:${email}`;
+        return;
+      }
+      const original = label.textContent;
+      label.textContent = 'copied to clipboard';
+      icon?.classList.add('hidden');
+      window.setTimeout(() => {
+        label.textContent = original;
+        icon?.classList.remove('hidden');
+      }, 1600);
+    };
 
-  copyBtn?.addEventListener('click', copy);
-  copyBtn?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      copy();
-    }
-  });
+    copyBtn.onclick = copy;
+    copyBtn.onkeydown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        copy();
+      }
+    };
+  };
 </script>
