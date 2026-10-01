@@ -9,11 +9,11 @@ export const profile = {
   role: 'Computer Science graduate · AI/ML engineer',
   statement: 'I build intelligent systems and study how they work.',
   support:
-    'Computer Science graduate focused on AI systems, machine learning, backend engineering, and research in ML and computer vision. Currently building LLM and retrieval applications, backend services, and CNN models.',
+    'ML pipelines, retrieval systems, and CNNs trained from scratch, with the backend engineering to ship them.',
   education: {
     school: 'Federal University of Technology, Minna',
     degree: 'B.Tech, Computer Science',
-    period: '2021 - 2026 (expected)',
+    period: '2021 - 2026',
   },
   location: 'Nigeria',
 
