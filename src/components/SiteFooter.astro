@@ -4,11 +4,11 @@ import { profile } from '../data/profile';
 const year = new Date().getFullYear();
 ---
 
-<footer class="border-t border-line">
+<footer class="border-t border-line pb-6 pt-8">
   <div
-    class="mx-auto flex w-full max-w-5xl flex-col gap-2 px-6 py-8 font-mono text-xs text-ink-3 sm:flex-row sm:items-center sm:justify-between"
+    class="mx-auto flex w-full max-w-5xl flex-col gap-1.5 px-6 font-mono text-xs text-ink-3 sm:flex-row sm:items-center sm:justify-between"
   >
     <p>© {year} {profile.name}</p>
-    <p>// built with astro + tailwind · no trackers · no analytics</p>
+    <p>built with astro + tailwind · no trackers</p>
   </div>
 </footer>
