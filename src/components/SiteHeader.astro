@@ -3,67 +3,154 @@ import ThemeToggle from './ThemeToggle.astro';
 import { nav } from '../data/profile';
 ---
 
-<header class="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur">
-  <div class="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
-    <a href="/" class="font-mono text-sm font-semibold tracking-tight text-ink">
-      adetayo<span class="text-accent-text">.</span>tella<span class="cursor-blink text-accent">_</span>
-    </a>
-
-    <nav class="hidden items-center gap-7 md:flex" aria-label="Primary">
-      {
-        nav.map((item) => (
-          <a href={item.href} class="text-sm text-ink-2 transition-colors hover:text-ink">
-            {item.label}
-          </a>
-        ))
-      }
-      <ThemeToggle />
-    </nav>
-
-    <div class="flex items-center gap-3 md:hidden">
-      <ThemeToggle />
-      <button
-        id="menu-toggle"
-        type="button"
-        aria-expanded="false"
-        aria-controls="mobile-nav"
-        aria-label="Open menu"
-        class="grid size-9 place-items-center rounded-[3px] border border-line text-ink-2 transition-colors hover:border-line-strong hover:text-ink"
+<!--
+  Two nav states, one element:
+  - inline (top of page): transparent, blends into the hero
+  - detached (after scroll): floating glass capsule island, content scrolls beneath it
+-->
+<header id="site-header" class="fixed inset-x-0 top-0 z-40 pt-3 sm:pt-4">
+  <div class="mx-auto w-full max-w-5xl px-4 sm:px-6">
+    <div
+      id="header-shell"
+      class="flex h-14 items-center justify-between rounded-xl border border-transparent px-3 transition-all duration-300 ease-out sm:px-4"
+    >
+      <a
+        href="/"
+        class="rounded font-display text-[15px] font-semibold tracking-tight text-ink transition-transform duration-150 ease-out active:scale-[0.97]"
       >
-        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"></path>
-        </svg>
-      </button>
-    </div>
-  </div>
+        adetayo<span class="text-accent-text">.</span>tella<span class="cursor-blink text-accent">_</span>
+      </a>
 
-  <div id="mobile-nav" hidden class="border-t border-line bg-paper md:hidden">
-    <nav class="mx-auto flex w-full max-w-5xl flex-col px-6 py-2" aria-label="Mobile">
-      {
-        nav.map((item) => (
-          <a href={item.href} class="border-b border-line py-3.5 text-sm text-ink-2 last:border-b-0">
-            {item.label}
-          </a>
-        ))
-      }
-    </nav>
+      <nav class="hidden items-center gap-1 md:flex" aria-label="Primary">
+        {
+          nav.map((item) => (
+            <a
+              href={item.href}
+              data-spy
+              class="rounded-md px-3 py-2 text-sm text-ink-2 transition-colors duration-150 ease-out hover:bg-ink/[0.04] hover:text-ink aria-current:bg-ink/10 aria-current:text-ink"
+            >
+              {item.label}
+            </a>
+          ))
+        }
+        <span class="mx-1.5 h-5 w-px bg-line-strong" aria-hidden="true" />
+        <ThemeToggle />
+      </nav>
+
+      <div class="flex items-center gap-2 md:hidden">
+        <ThemeToggle />
+        <button
+          id="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="mobile-nav"
+          aria-label="Open menu"
+          class="grid size-10 place-items-center rounded-lg text-ink-2 transition-all duration-150 ease-out hover:bg-ink/[0.05] hover:text-ink active:scale-[0.95]"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-nav" hidden class="glass mt-2 rounded-xl p-2 md:hidden">
+      <nav class="flex flex-col" aria-label="Mobile">
+        {
+          nav.map((item) => (
+            <a
+              href={item.href}
+              class="rounded-lg px-3 py-3 text-sm text-ink-2 transition-colors duration-150 ease-out hover:bg-ink/[0.04] hover:text-ink active:bg-ink/[0.07]"
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
   </div>
 </header>
 
+<style>
+  /* menu panel: soft overshoot on open, fast on close (asymmetric timing) */
+  #mobile-nav {
+    transform-origin: top;
+    transform: scaleY(1);
+    opacity: 1;
+    transition:
+      transform 0.4s cubic-bezier(0.34, 1.35, 0.64, 1),
+      opacity 0.22s ease-out;
+  }
+  #mobile-nav[data-state='opening'] {
+    transform: scaleY(0.92);
+    opacity: 0;
+  }
+  #mobile-nav[data-state='closing'] {
+    transform: scaleY(0.92);
+    opacity: 0;
+    transition:
+      transform 0.16s ease-out,
+      opacity 0.16s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #mobile-nav,
+    #mobile-nav[data-state='opening'],
+    #mobile-nav[data-state='closing'] {
+      transform: none;
+      opacity: 1;
+      transition: none;
+    }
+  }
+</style>
+
 <script>
+  const header = document.getElementById('site-header');
+  const shell = document.getElementById('header-shell');
   const btn = document.getElementById('menu-toggle');
-  const panel = document.getElementById('mobile-nav');
+  const panel = document.getElementById('mobile-nav') as HTMLElement | null;
+
+  // detach the capsule and switch on the glass treatment once the page scrolls
+  const setDetached = (detached: boolean) => {
+    shell?.classList.toggle('glass', detached);
+    shell?.classList.toggle('border-line', detached);
+    shell?.classList.toggle('shadow-[var(--shadow-card)]', detached);
+    header?.classList.toggle('pb-3', detached);
+  };
+  const sync = () => setDetached(window.scrollY > 12);
+  sync();
+  window.addEventListener('scroll', sync, { passive: true });
+
+  let closeTimer: number | undefined;
 
   btn?.addEventListener('click', () => {
-    const willOpen = panel?.hasAttribute('hidden') ?? false;
-    panel?.toggleAttribute('hidden', !willOpen);
-    btn.setAttribute('aria-expanded', String(willOpen));
-    btn.setAttribute('aria-label', willOpen ? 'Close menu' : 'Open menu');
+    if (!panel) return;
+    window.clearTimeout(closeTimer);
+
+    if (panel.hasAttribute('hidden')) {
+      panel.removeAttribute('hidden');
+      panel.setAttribute('data-state', 'opening');
+      // force a style flush so the closing start-state is committed before opening
+      void panel.getBoundingClientRect();
+      panel.removeAttribute('data-state');
+      btn.setAttribute('aria-expanded', 'true');
+      btn.setAttribute('aria-label', 'Close menu');
+      setDetached(true);
+    } else {
+      panel.setAttribute('data-state', 'closing');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-label', 'Open menu');
+      closeTimer = window.setTimeout(() => {
+        panel.setAttribute('hidden', '');
+        panel.removeAttribute('data-state');
+      }, 160);
+    }
   });
 
   panel?.querySelectorAll('a').forEach((link) =>
     link.addEventListener('click', () => {
+      window.clearTimeout(closeTimer);
       panel.setAttribute('hidden', '');
+      panel.removeAttribute('data-state');
       btn?.setAttribute('aria-expanded', 'false');
       btn?.setAttribute('aria-label', 'Open menu');
     })
