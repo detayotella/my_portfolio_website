@@ -32,6 +32,8 @@ Everything is data-driven: you should never need to touch a component to update 
 | Experience, education, certifications | `src/data/experience.ts` |
 | “Currently Exploring” topics | `src/data/exploring.ts` |
 | Projects (cards + case studies) | `src/content/projects/*.mdx` |
+| Writing notes (posts + homepage list) | `src/content/writing/*.mdx` |
+| Project screenshots | `src/assets/projects/*.png` |
 | Colors, fonts, motion, case-study typography | `src/styles/global.css` |
 
 ### Adding a project
@@ -44,6 +46,8 @@ title: "My Project"
 subtitle: "short subtitle"
 summary: "One or two sentences shown on the homepage card."
 tags: ["Python", "FastAPI"]
+image: "my-project.png"   # optional; file in src/assets/projects/
+imageAlt: "What the screenshot shows"
 order: 5          # card number / sort order
 featured: false   # true = the big featured block (only one)
 links:
@@ -53,7 +57,25 @@ links:
 ```
 
 …then write the case study body in Markdown. The card, URL (`/projects/my-project/`),
-and SEO metadata are generated automatically.
+and SEO metadata are generated automatically. Screenshots are optimized to WebP at
+build time via `astro:assets` (no manual resizing needed).
+
+### Adding a writing note
+
+Create `src/content/writing/my-note.mdx` with frontmatter:
+
+```yaml
+---
+title: "My note"
+description: "One or two sentences shown in the lists and previews."
+pubDate: 2026-10-01
+tags: ["RAG"]        # optional
+draft: false         # true = hidden everywhere
+---
+```
+
+The post appears on the homepage Writing section and at `/writing/my-note/`
+automatically, newest first.
 
 ## Remaining TODOs before publishing
 
