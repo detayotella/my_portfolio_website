@@ -1,5 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
@@ -17,6 +19,13 @@ const { Content } = await render(project);
 const others = (await getCollection('projects'))
   .filter((p) => p.id !== project.id)
   .sort((a, b) => a.data.order - b.data.order);
+
+const images = import.meta.glob<{ default: ImageMetadata }>('../../assets/projects/*.png', {
+  eager: true,
+});
+const image = project.data.image
+  ? images[`../../assets/projects/${project.data.image}`]?.default
+  : null;
 ---
 
 <Base title={`${project.data.title} · Adetayo Tella`} description={project.data.summary}>
@@ -45,6 +54,22 @@ const others = (await getCollection('projects'))
       <div class="mt-5 flex flex-wrap gap-1.5">
         {project.data.tags.map((tag) => <Tag label={tag} />)}
       </div>
+      {
+        image && (
+          <Image
+            src={image}
+            alt={project.data.imageAlt || `Repository view of ${project.data.title}`}
+            widths={[640, 960, 1280]}
+            sizes="(min-width: 768px) 768px, 100vw"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            format="webp"
+            quality={80}
+            class="mt-8 h-auto w-full rounded-xl border border-line"
+          />
+        )
+      }
       {
         project.data.links?.repo && (
           <a
