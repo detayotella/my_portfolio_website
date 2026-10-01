@@ -38,7 +38,7 @@ const image = project.data.image ? images[`../assets/projects/${project.data.ima
           decoding="async"
           format="webp"
           quality={80}
-          class="h-auto w-full"
+          class="card-shot h-auto w-full"
         />
       </div>
     )
@@ -73,7 +73,7 @@ const image = project.data.image ? images[`../assets/projects/${project.data.ima
       class="link font-medium"
       aria-label={`Read the ${project.data.title} case study`}
     >
-      Case study →
+      Case study <span class="arrow" aria-hidden="true">→</span>
     </a>
   </div>
 </article>
