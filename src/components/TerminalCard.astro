@@ -19,18 +19,68 @@ const lines = [
   </div>
   <div class="space-y-2.5 p-5 font-mono text-[13px] leading-relaxed">
     {
-      lines.map((line) => (
-        <div>
+      lines.map((line, i) => (
+        <div style={`--line-i: ${i}`}>
           <p>
-            <span class="text-accent-text">$</span> <span class="text-ink">{line.cmd}</span>
+            <span class="text-accent-text">$</span>{' '}
+            <span
+              class="term-cmd text-ink"
+              style={`--cmd-w: ${line.cmd.length + 1}ch`}
+              >{line.cmd}</span
+            >
           </p>
-          <p class="text-ink-2">{line.out}</p>
+          <p class="term-out text-ink-2">{line.out}</p>
         </div>
       ))
     }
-    <p>
+    <p class="term-caret" style={`--line-count: ${lines.length}`}>
       <span class="text-accent-text">$</span>
       <span class="cursor-blink text-accent">▊</span>
     </p>
   </div>
 </div>
+
+<style>
+  /*
+   * Typewriter on first visit of the session (html.hero-first is set in Base).
+   * Width animates in ch units with overflow hidden, so line height never
+   * changes and there is no layout shift. Static without JS or on repeat visits.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.hero-first) .term-cmd {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      vertical-align: bottom;
+      width: 0;
+      animation: term-type 0.5s steps(22, end) both;
+      animation-delay: calc(var(--line-i) * 0.55s + 0.85s);
+    }
+    :global(.hero-first) .term-out {
+      opacity: 0;
+      animation: term-fade 0.35s ease-out both;
+      animation-delay: calc(var(--line-i) * 0.55s + 1.3s);
+    }
+    :global(.hero-first) .term-caret {
+      opacity: 0;
+      animation: term-fade 0.3s ease-out both;
+      animation-delay: calc(var(--line-count) * 0.55s + 1.1s);
+    }
+  }
+  @keyframes term-type {
+    from {
+      width: 0;
+    }
+    to {
+      width: var(--cmd-w);
+    }
+  }
+  @keyframes term-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
