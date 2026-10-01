@@ -1,0 +1,30 @@
+---
+title: "Why my social backend talks in events instead of function calls"
+description: "Splitting a social product into five services forced a choice: services calling each other directly, or services publishing events. The event-driven version taught me more."
+pubDate: 2026-09-24
+tags: ["Microservices", "RabbitMQ", "Node.js", "Systems Design"]
+---
+
+The naive version of a microservices project is a monolith with network calls between the pieces. The gateway calls identity to check a token, posts calls media to attach a file, posts calls search to update an index. It works until one of the callees is slow or down, and then every caller inherits the failure.
+
+The interesting alternative: services publish facts about what happened, and other services decide what those facts mean for them.
+
+## The five services
+
+A social product split by responsibility rather than by layer: an API gateway as the single entry point, identity for registration and sessions, posts for creation and deletion, media for uploads, and search for full-text queries over posts.
+
+The event core is small. When a post is created, the posts service publishes `post.created`, and the search service indexes it. When a post is deleted, `post.deleted` goes out, the media service deletes the attached files, and search removes its entries.
+
+## What changed in my head
+
+Producers publish and move on. The posts service does not know that search exists, or that media listens for deletions. That ignorance is the feature. Adding a feature that reacts to posts (notifications, say) means adding a subscriber, not editing the posts service and redeploying everything that depends on it.
+
+It also changes failure handling. A consumer that is temporarily down does not block the producer. The event sits in the queue, and the consumer catches up. The cleanup of a deleted post's files is eventually consistent, and that is an acceptable, deliberate trade rather than an accident.
+
+## Caching and the unglamorous parts
+
+Search sits behind Redis, with MongoDB text indexes doing the actual matching. Caching repeat queries is a small addition that changes how the app feels: the second search is instant. It also taught me that cache invalidation deserves first-class attention, not a `ttl` you set and forget.
+
+Two defaults I would keep in any next version: every service carries its own Jest suite, so tests run at the same granularity as deployment, and the whole stack comes up with `docker-compose up --build`, with the RabbitMQ management UI making the event flow observable while you develop.
+
+Observability of the event flow is underrated. Watching messages move through the management UI is how I found the first duplicate-delivery bug, before it ever reached a test.
