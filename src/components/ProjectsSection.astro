@@ -26,7 +26,7 @@ const featuredImage = featured?.data.image
     featured && (
       <article
         data-reveal
-        class="grid gap-10 rounded-xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-8 lg:grid-cols-[1fr_0.95fr]"
+        class="group grid gap-10 rounded-xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-8 lg:grid-cols-[1fr_0.95fr]"
       >
         <div class="flex flex-col">
           <h3 class="font-display text-2xl font-semibold tracking-tight">
@@ -64,7 +64,7 @@ const featuredImage = featured?.data.image
 
           <div class="mt-auto flex flex-wrap items-center gap-5 pt-7 text-sm">
             <a href={`/projects/${featured.id}/`} class="link font-medium">
-              Read the case study →
+              Read the case study <span class="arrow" aria-hidden="true">→</span>
             </a>
             {
               featured.data.links?.repo && (
