@@ -23,7 +23,7 @@ import '@fontsource-variable/jetbrains-mono';
         width: 1200px;
         height: 630px;
         overflow: hidden;
-        background: #fafaf7;
+        background: #faf9f6;
         background-image: radial-gradient(rgba(28, 25, 23, 0.09) 1.5px, transparent 1.5px);
         background-size: 26px 26px;
         font-family: "Inter Variable", system-ui, sans-serif;
@@ -118,7 +118,7 @@ import '@fontsource-variable/jetbrains-mono';
         <div class="statement">
           <div class="bar"></div>
           <div>
-            <p class="eyebrow"><b>$</b> whoami — computer science @ fut minna</p>
+            <p class="eyebrow"><b>$</b> whoami · computer science @ fut minna</p>
             <h1>I build intelligent systems and study how they work.</h1>
           </div>
         </div>
