@@ -28,7 +28,6 @@ export const exploringColumns: ExploringColumn[] = [
       { name: 'LLM evaluation', note: 'llm-as-judge with structured scoring' },
       { name: 'Representation learning', note: 'what intermediate layers actually learn' },
     ],
-    footnote: 'Attention(Q, K, V) = softmax(QKᵀ / √dₖ) · V',
   },
   {
     title: 'ml systems & vision',
@@ -41,7 +40,6 @@ export const exploringColumns: ExploringColumn[] = [
       { name: 'Local inference', note: 'cpu-only training, on-device embeddings' },
       { name: 'Vector databases', note: 'chroma, similarity search, metadata' },
     ],
-    footnote: '// torch cpu-only · embeddings via all-MiniLM-L6-v2',
   },
   {
     title: 'software engineering',
