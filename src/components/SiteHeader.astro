@@ -104,65 +104,78 @@ import { nav } from '../data/profile';
   }
 </style>
 
-<script>
-  const header = document.getElementById('site-header');
-  const shell = document.getElementById('header-shell');
-  const btn = document.getElementById('menu-toggle');
-  const panel = document.getElementById('mobile-nav') as HTMLElement | null;
+<script is:inline>
+  // Idempotent init, called on first load and again from Base's astro:page-load
+  // listener so the header rebinds after client-side navigations.
+  window.__initHeader = function () {
+    const header = document.getElementById('site-header');
+    const shell = document.getElementById('header-shell');
+    const btn = document.getElementById('menu-toggle');
+    const panel = document.getElementById('mobile-nav');
+    if (!header || !shell || !btn || !panel) return;
 
-  // detach the capsule and switch on the glass treatment once the page scrolls
-  const setDetached = (detached: boolean) => {
-    shell?.classList.toggle('glass', detached);
-    shell?.classList.toggle('border-line', detached);
-    shell?.classList.toggle('shadow-[var(--shadow-card)]', detached);
-    header?.classList.toggle('pb-3', detached);
-  };
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const sync = () => {
-    if (reduceMotion.matches && shell) {
-      // under reduced motion the glass swap still happens, minus the transition
-      shell.style.transition = 'none';
-    } else {
-      shell?.style.removeProperty('transition');
+    // detach the capsule and switch on the glass treatment once the page scrolls
+    const setDetached = (detached) => {
+      shell.classList.toggle('glass', detached);
+      shell.classList.toggle('border-line', detached);
+      shell.classList.toggle('shadow-[var(--shadow-card)]', detached);
+      header.classList.toggle('pb-3', detached);
+    };
+
+    // one-pixel sentinel at the top of the document: when it leaves the viewport,
+    // the page has scrolled past the top. IntersectionObserver instead of a
+    // scroll listener, per the motion rules.
+    let sentinel = document.getElementById('header-sentinel');
+    if (!sentinel) {
+      sentinel = document.createElement('div');
+      sentinel.id = 'header-sentinel';
+      sentinel.style.height = '1px';
+      document.body.prepend(sentinel);
     }
+    if (window.__headerIO) window.__headerIO.disconnect();
+    window.__headerIO = new IntersectionObserver(
+      ([entry]) => setDetached(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    window.__headerIO.observe(sentinel);
+    // apply the correct state synchronously so client-side navigations don't flicker
     setDetached(window.scrollY > 12);
-  };
-  sync();
-  window.addEventListener('scroll', sync, { passive: true });
 
-  let closeTimer: number | undefined;
+    let closeTimer;
 
-  btn?.addEventListener('click', () => {
-    if (!panel) return;
-    window.clearTimeout(closeTimer);
+    btn.onclick = () => {
+      window.clearTimeout(closeTimer);
 
-    if (panel.hasAttribute('hidden')) {
-      panel.removeAttribute('hidden');
-      panel.setAttribute('data-state', 'opening');
-      // force a style flush so the closing start-state is committed before opening
-      void panel.getBoundingClientRect();
-      panel.removeAttribute('data-state');
-      btn.setAttribute('aria-expanded', 'true');
-      btn.setAttribute('aria-label', 'Close menu');
-      setDetached(true);
-    } else {
-      panel.setAttribute('data-state', 'closing');
-      btn.setAttribute('aria-expanded', 'false');
-      btn.setAttribute('aria-label', 'Open menu');
-      closeTimer = window.setTimeout(() => {
+      if (panel.hasAttribute('hidden')) {
+        panel.removeAttribute('hidden');
+        panel.setAttribute('data-state', 'opening');
+        // force a style flush so the closing start-state is committed before opening
+        void panel.getBoundingClientRect();
+        panel.removeAttribute('data-state');
+        btn.setAttribute('aria-expanded', 'true');
+        btn.setAttribute('aria-label', 'Close menu');
+        setDetached(true);
+      } else {
+        panel.setAttribute('data-state', 'closing');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Open menu');
+        closeTimer = window.setTimeout(() => {
+          panel.setAttribute('hidden', '');
+          panel.removeAttribute('data-state');
+        }, 160);
+      }
+    };
+
+    panel?.querySelectorAll('a').forEach((link) => {
+      link.onclick = () => {
+        window.clearTimeout(closeTimer);
         panel.setAttribute('hidden', '');
         panel.removeAttribute('data-state');
-      }, 160);
-    }
-  });
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Open menu');
+      };
+    });
+  };
 
-  panel?.querySelectorAll('a').forEach((link) =>
-    link.addEventListener('click', () => {
-      window.clearTimeout(closeTimer);
-      panel.setAttribute('hidden', '');
-      panel.removeAttribute('data-state');
-      btn?.setAttribute('aria-expanded', 'false');
-      btn?.setAttribute('aria-label', 'Open menu');
-    })
-  );
+  window.__initHeader();
 </script>
