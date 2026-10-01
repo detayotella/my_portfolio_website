@@ -52,6 +52,9 @@ const jsonLd = JSON.stringify({
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content="/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${profile.name}: ${profile.statement}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={description} />
@@ -76,7 +79,7 @@ const jsonLd = JSON.stringify({
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
 
-    <!-- progressive enhancement: content is fully visible without JS.
+    <!-- scroll reveal: progressive enhancement, content is fully visible without JS.
          Stagger: children of a [data-reveal-group] get --reveal-i = their index,
          so grids enter as a 60ms cascade instead of one block. -->
     <script is:inline>
