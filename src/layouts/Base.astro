@@ -2,6 +2,7 @@
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/space-grotesk';
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import { profile, site } from '../data/profile';
 
@@ -46,6 +47,7 @@ const jsonLd = JSON.stringify({
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={profile.github} />
+    <ClientRouter />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={profile.name} />
@@ -70,6 +72,35 @@ const jsonLd = JSON.stringify({
           ? stored === 'dark'
           : window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.documentElement.classList.toggle('dark', dark);
+        document.addEventListener('astro:after-swap', () => {
+          const stored2 = localStorage.getItem('theme');
+          const dark2 = stored2
+            ? stored2 === 'dark'
+            : window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('dark', dark2);
+        });
+      })();
+    </script>
+
+    <!-- the hero entrance choreography plays once per session: html.hero-first
+         survives until a page that actually contains the hero has rendered, so a
+         deep link never burns the session's one entrance on a hero-less page -->
+    <script is:inline>
+      (() => {
+        const keepAlive = () => {
+          if (!sessionStorage.getItem('hero-played')) {
+            document.documentElement.classList.add('hero-first');
+          }
+        };
+        keepAlive();
+        document.addEventListener('astro:after-swap', keepAlive);
+        document.addEventListener('astro:page-load', () => {
+          if (document.querySelector('.hero-load')) {
+            sessionStorage.setItem('hero-played', '1');
+          } else {
+            document.documentElement.classList.remove('hero-first');
+          }
+        });
       })();
     </script>
 
@@ -79,59 +110,84 @@ const jsonLd = JSON.stringify({
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
 
-    <!-- scroll reveal: progressive enhancement, content is fully visible without JS.
+    <!-- progressive enhancement: content is fully visible without JS.
+         One idempotent initializer, re-run on astro:after-swap (pre-paint, so the
+         incoming page never flashes revealed content) and again on astro:page-load.
+         Disconnect guards make the re-run safe.
          Stagger: children of a [data-reveal-group] get --reveal-i = their index,
          so grids enter as a 60ms cascade instead of one block. -->
     <script is:inline>
-      document.documentElement.classList.add('js');
+      window.__pageEnhancements = function () {
+        document.documentElement.classList.add('js');
 
-      document.querySelectorAll('[data-reveal-group]').forEach((group) => {
-        group.querySelectorAll(':scope > [data-reveal-child]').forEach((child, i) => {
-          child.style.setProperty('--reveal-i', String(Math.min(i, 8)));
+        // reveal-on-scroll
+        if (window.__revealIO) window.__revealIO.disconnect();
+        document.querySelectorAll('[data-reveal-group]').forEach((group) => {
+          group.querySelectorAll(':scope > [data-reveal-child]').forEach((child, i) => {
+            child.style.setProperty('--reveal-i', String(Math.min(i, 8)));
+          });
         });
+        const targets = document.querySelectorAll('[data-reveal], [data-reveal-group]');
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('is-visible');
+                  io.unobserve(entry.target);
+                }
+              }
+            },
+            { threshold: 0.08, rootMargin: '0px 0px -48px 0px' }
+          );
+          targets.forEach((t) => io.observe(t));
+          window.__revealIO = io;
+        } else {
+          targets.forEach((t) => t.classList.add('is-visible'));
+        }
+
+        // scroll spy: highlight the nav link for the section currently on screen
+        if (window.__spyIO) window.__spyIO.disconnect();
+        const links = document.querySelectorAll('[data-spy]');
+        if (links.length && 'IntersectionObserver' in window) {
+          const byId = new Map();
+          links.forEach((l) => byId.set((l.getAttribute('href') || '').replace(/^\/?#/, ''), l));
+          const spy = new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                const link = byId.get(entry.target.id);
+                if (!link) continue;
+                if (entry.isIntersecting) {
+                  links.forEach((l) => l.removeAttribute('aria-current'));
+                  link.setAttribute('aria-current', 'true');
+                }
+              }
+            },
+            { rootMargin: '-40% 0px -55% 0px' }
+          );
+          byId.forEach((_, id) => {
+            const el = document.getElementById(id);
+            if (el) spy.observe(el);
+          });
+          window.__spyIO = spy;
+        }
+      };
+
+      window.__pageEnhancements();
+
+      // after a client-side swap the html element's classes (js, dark, hero-first)
+      // are wiped with the incoming document, so re-run the reveal setup here,
+      // before the new page is first painted, to avoid a visible flash.
+      document.addEventListener('astro:after-swap', () => window.__pageEnhancements());
+
+      // full rebind once the new page has settled: component scripts don't re-run
+      // after a swap, so their idempotent window.__init* functions are re-called.
+      document.addEventListener('astro:page-load', () => {
+        window.__pageEnhancements();
+        window.__initHeader?.();
+        window.__initThemeToggle?.();
+        window.__initContact?.();
       });
-
-      const revealTargets = document.querySelectorAll('[data-reveal], [data-reveal-group]');
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                io.unobserve(entry.target);
-              }
-            }
-          },
-          { threshold: 0.08, rootMargin: '0px 0px -48px 0px' }
-        );
-        revealTargets.forEach((t) => io.observe(t));
-      } else {
-        revealTargets.forEach((t) => t.classList.add('is-visible'));
-      }
-
-      // scroll spy: underline the nav link for the section currently on screen
-      const links = document.querySelectorAll('[data-spy]');
-      if (links.length && 'IntersectionObserver' in window) {
-        const byId = new Map();
-        links.forEach((l) => byId.set((l.getAttribute('href') || '').replace(/^\/?#/, ''), l));
-        const spy = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              const link = byId.get(entry.target.id);
-              if (!link) continue;
-              if (entry.isIntersecting) {
-                links.forEach((l) => l.removeAttribute('aria-current'));
-                link.setAttribute('aria-current', 'true');
-              }
-            }
-          },
-          { rootMargin: '-40% 0px -55% 0px' }
-        );
-        byId.forEach((_, id) => {
-          const el = document.getElementById(id);
-          if (el) spy.observe(el);
-        });
-      }
     </script>
   </body>
 </html>
