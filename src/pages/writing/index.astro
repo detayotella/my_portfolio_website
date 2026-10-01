@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+
+const posts = (await getCollection('writing', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const dateFormat = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+---
+
+<Base
+  title="Writing · Adetayo Tella"
+  description="Short technical notes on retrieval systems, machine learning, and backend engineering, written while learning in public."
+>
+  <SiteHeader />
+  <main id="main" class="mx-auto w-full max-w-3xl px-6 pt-28 sm:pt-32">
+    <nav class="font-mono text-xs text-ink-3" aria-label="Breadcrumb">
+      <a href="/#writing" class="transition-colors duration-150 ease-out hover:text-ink">~/writing</a>
+    </nav>
+
+    <header class="mt-8">
+      <h1 class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">Writing</h1>
+      <p class="mt-4 max-w-xl text-base leading-relaxed text-ink-2">
+        Short technical notes on what I'm learning and building: retrieval systems, machine
+        learning mechanics, and backend engineering. Written to think clearly, published to think
+        in public.
+      </p>
+    </header>
+
+    <div class="mt-12 divide-y divide-line border-t border-line">
+      {
+        posts.map((post) => (
+          <article class="group relative grid gap-2 py-7 sm:grid-cols-[9rem_1fr] sm:gap-8">
+            <p class="font-mono text-xs leading-6 text-ink-3">
+              {dateFormat.format(post.data.pubDate)}
+            </p>
+            <div>
+              <h2 class="font-display text-lg font-semibold tracking-tight">
+                <a
+                  href={`/writing/${post.id}/`}
+                  class="transition-colors duration-150 ease-out after:absolute after:inset-0 group-hover:text-accent-text"
+                >
+                  {post.data.title}
+                </a>
+              </h2>
+              <p class="mt-1.5 text-sm leading-relaxed text-ink-2">{post.data.description}</p>
+              {post.data.tags.length > 0 && (
+                <p class="mt-2 font-mono text-[11px] text-ink-3">{post.data.tags.join(', ')}</p>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </main>
+  <SiteFooter />
+</Base>
