@@ -2,30 +2,119 @@
 import { profile } from '../data/profile';
 ---
 
-<section id="contact" class="mx-auto w-full max-w-5xl px-6 py-24">
-  <div data-reveal class="border-t border-line pt-14">
-    <p class="font-mono text-xs text-ink-3" aria-hidden="true">// open channel</p>
-    <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-      Let's build something interesting.
+<!-- the one closing CTA, on a dark ink panel: mailto is the only button-shaped
+     action here; GitHub/LinkedIn are quiet text links -->
+<section id="contact" class="mx-auto w-full max-w-5xl px-6 pb-24 pt-4">
+  <div
+    data-reveal
+    class="rounded-xl bg-ink px-6 py-12 shadow-[var(--shadow-card)] sm:px-10 sm:py-14"
+  >
+    <h2 class="font-display text-3xl font-semibold tracking-tight text-paper sm:text-4xl">
+      Have something in mind? Let's build it.
     </h2>
-    <p class="mt-4 max-w-lg text-base leading-relaxed text-ink-2">
-      Whether it's an internship, a research question, or an interesting bug, the fastest way to
-      reach me is email. I'm also on GitHub and LinkedIn.
+    <p class="mt-4 max-w-lg text-base leading-relaxed text-paper/70">
+      Internships, research questions, stubborn bugs, or an idea that needs a backend: email is
+      the fastest way to reach me, and I read everything.
     </p>
-    <div class="mt-8 flex flex-wrap gap-3">
-      <a class="btn btn-primary" href={`mailto:${profile.email}`}>Email me</a>
+
+    <div class="mt-8 flex flex-wrap items-center gap-4">
+      <a class="btn bg-paper text-ink hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-[#131110]" href={`mailto:${profile.email}`}>
+        Email me
+      </a>
+
+      <span
+        id="email-copy"
+        class="group inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border border-paper/20 px-3 py-2 font-mono text-xs text-paper/80 transition-colors duration-150 ease-out hover:border-paper/50 hover:text-paper active:scale-[0.98]"
+        role="button"
+        tabindex="0"
+        data-email={profile.email}
+        title="Copy email address"
+      >
+        <span data-copy-label>{profile.email}</span>
+        <svg
+          data-copy-icon
+          class="size-3.5 opacity-60 transition-opacity duration-150 group-hover:opacity-100"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </span>
+    </div>
+
+    <div class="mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm">
       <a
-        class="btn btn-secondary"
         href={profile.github}
         target="_blank"
-        rel="noopener noreferrer">GitHub ↗</a
+        rel="noopener noreferrer"
+        class="text-paper/60 underline decoration-paper/25 underline-offset-4 transition-colors duration-150 ease-out hover:text-paper"
       >
+        GitHub ↗
+      </a>
       <a
-        class="btn btn-secondary"
         href={profile.linkedin}
         target="_blank"
-        rel="noopener noreferrer">LinkedIn ↗</a
+        rel="noopener noreferrer"
+        class="text-paper/60 underline decoration-paper/25 underline-offset-4 transition-colors duration-150 ease-out hover:text-paper"
       >
+        LinkedIn ↗
+      </a>
     </div>
   </div>
 </section>
+
+<script>
+  const copyBtn = document.getElementById('email-copy');
+  const label = copyBtn?.querySelector('[data-copy-label]');
+  const icon = copyBtn?.querySelector('[data-copy-icon]');
+
+  const copy = async () => {
+    if (!copyBtn || !label) return;
+    const email = copyBtn.getAttribute('data-email') || '';
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(email);
+      copied = true;
+    } catch {
+      // clipboard API unavailable (permissions/insecure context): legacy fallback
+      const ta = document.createElement('textarea');
+      ta.value = email;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      // cast: execCommand is deprecated, but it is the standard legacy fallback here
+      const legacyCopy = document as unknown as { execCommand: (cmd: string) => boolean };
+      try {
+        copied = legacyCopy.execCommand('copy');
+      } catch {
+        copied = false;
+      }
+      ta.remove();
+    }
+    if (!copied) {
+      // last resort: hand off to the mail client
+      window.location.href = `mailto:${email}`;
+      return;
+    }
+    const original = label.textContent;
+    label.textContent = 'copied to clipboard';
+    icon?.classList.add('hidden');
+    window.setTimeout(() => {
+      label.textContent = original;
+      icon?.classList.remove('hidden');
+    }, 1600);
+  };
+
+  copyBtn?.addEventListener('click', copy);
+  copyBtn?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      copy();
+    }
+  });
+</script>
