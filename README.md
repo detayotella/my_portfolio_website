@@ -4,10 +4,10 @@ Personal portfolio for **Adetayo Tella**, Computer Science graduate and AI/ML en
 Built around one positioning: *“I build intelligent systems and study how they work.”*
 
 Static site: **Astro 5 + TypeScript + Tailwind CSS 4**, zero client-side JavaScript except a
-theme toggle, a mobile menu, and a scroll-reveal observer (all progressive enhancement).
-The site ships a hand-drawn SVG schematic of the RAG pipeline, a light “lab notebook” default
-theme with a dark “terminal at night” mode, dedicated case-study pages per project, and full
-SEO/OG metadata.
+theme toggle, a mobile menu, a copy-email button, scroll-spy, and a scroll-reveal observer
+(all progressive enhancement). The site ships a hand-drawn SVG schematic of the RAG pipeline,
+a light “lab notebook” default theme with a dark “terminal at night” mode, dedicated case-study
+pages per project, and full SEO/OG metadata.
 
 ## Commands
 
@@ -60,15 +60,26 @@ and SEO metadata are generated automatically.
 - `astro.config.mjs` → set `site` to the production domain (then optionally
   `npm i @astrojs/sitemap` and add it to `integrations`; add the sitemap line to `public/robots.txt`)
 - `src/content/projects/*.mdx` → add `links.demo` entries if any project gets a live demo
+- `public/og.png` → regenerate from `scripts/og-card.astro.txt` (see below) after any
+  headline/branding change
 
 ## Design system
 
-- **Palette:** warm paper `#fafaf7` + ink `#1c1917` + burnt-amber accent (`#ea580c` graphics,
+- **Palette:** warm paper `#faf9f6` + ink `#1c1917` + burnt-amber accent (`#ea580c` graphics,
   `#9a3412` for small text, WCAG AA). Dark mode swaps the same semantic tokens (`.dark` class,
   set pre-paint in `src/layouts/Base.astro` to avoid flashes).
-- **Type:** Inter Variable (interface) + JetBrains Mono Variable (labels, tags, schematics).
-- **Motion:** one fade-up on first view (IntersectionObserver + CSS), disabled under
-  `prefers-reduced-motion`; no animation libraries.
+- **Type:** Space Grotesk Variable (display headings) + Inter Variable (interface) +
+  JetBrains Mono Variable (labels, tags, schematics). Registered as `font-display`,
+  `font-sans`, and `font-mono` Tailwind tokens.
+- **Layout:** fixed nav that starts transparent over the hero and detaches into a floating
+  glass capsule (backdrop blur + hairline border) once the page scrolls. Sections keep one
+  corner-radius system (4px controls, 12px cards).
+- **Motion:** fade-up reveals with a 60ms stagger inside grids, hover lift + shadow on cards,
+  `scale(0.97)` press feedback on all interactive elements, a spring overshoot on the mobile
+  menu. All transform/opacity only, and everything collapses under `prefers-reduced-motion`.
+  No animation libraries.
+- **Interactions:** copy-email button in the contact panel (with clipboard fallback to
+  mailto), scroll-spy underline on nav links, IntersectionObserver reveals.
 
 ## Regenerating the Open Graph card
 
