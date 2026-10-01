@@ -1,17 +1,20 @@
 ---
 const lines = [
-  { cmd: 'whoami', out: 'adetayo tella · cs student · ai/ml engineer' },
+  { cmd: 'whoami', out: 'adetayo tella · cs grad · ai/ml engineer' },
   { cmd: 'cat focus.txt', out: 'ai systems · ml · rag · computer vision · backend' },
-  { cmd: 'ls ~/building', out: 'e-commerce-api  social-app-microservices  cifar-10  langchain-projects' },
-  { cmd: 'uptime', out: 'learning since 2021 · exploring transformers & computer vision' },
+  {
+    cmd: 'ls ~/building',
+    out: 'e-commerce-api  social-app-microservices  cifar-10  langchain-projects',
+  },
+  { cmd: 'uptime', out: 'building since 2021 · deep in transformers & computer vision' },
 ] as const;
 ---
 
-<div class="overflow-hidden rounded-md border border-line bg-surface">
+<div class="lift overflow-hidden rounded-xl border border-line bg-surface">
   <div class="flex items-center gap-2 border-b border-line px-4 py-3">
     <span class="size-2.5 rounded-full bg-line-strong" aria-hidden="true"></span>
     <span class="size-2.5 rounded-full bg-line-strong" aria-hidden="true"></span>
-    <span class="size-2.5 rounded-full bg-line-strong" aria-hidden="true"></span>
+    <span class="size-2.5 rounded-full bg-accent/60" aria-hidden="true"></span>
     <span class="ml-2 font-mono text-[11px] text-ink-3">adetayo@futminna: ~</span>
   </div>
   <div class="space-y-2.5 p-5 font-mono text-[13px] leading-relaxed">
