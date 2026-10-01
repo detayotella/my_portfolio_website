@@ -1,0 +1,30 @@
+---
+title: "Training a CNN from scratch is the best debugging exercise"
+description: "No pretrained backbone, no transfer learning, CPU only. What building a three-block convolutional network on CIFAR-10 taught me about what convolutions actually learn."
+pubDate: 2026-09-29
+tags: ["PyTorch", "Computer Vision", "CNNs", "Training"]
+---
+
+Every tutorial teaches you to load a pretrained backbone and fine-tune the classifier head. It works, it is the right engineering choice for almost every real problem, and it hides the mechanics completely. So for CIFAR-10 I went the other way: a three-block CNN written from scratch, trained on CPU, no pretrained weights anywhere.
+
+## The shape of the network
+
+Three conv blocks, each widening the channels as spatial resolution shrinks. Block one goes from 3 to 32 to 64 channels; block two from 64 to 128 to 128; block three from 128 to 256 to 256. Max pooling between them does the shrinking, and a classifier head flattens to fully connected layers (1024 to 512 to 10).
+
+The widening pattern is the part I now actually understand. Early blocks need few channels because they are learning simple, local patterns. Later blocks need many because they are composing those patterns into things that distinguish a cat from a dog. Pooling buys translation tolerance: the network stops caring whether the cat is centered.
+
+## The mechanics stop being abstract
+
+Loss, optimizer, learning rate: CrossEntropyLoss over the ten classes, Adam at 1e-3, fixed seeds so runs stay comparable. These were incantations before. Training my own network made each one a lever with visible consequences. Change the learning rate and watch the loss curve get dramatic. Skip the seeds and watch your "improvement" evaporate on the next run.
+
+The training loop itself is the education: data loading, transforms, epochs, evaluating on the test split each epoch, saving checkpoints. None of it is exotic, and all of it is invisible when a framework does it for you.
+
+## Overfitting is real and immediate
+
+With 60,000 small images and no pretrained weights, the network starts memorizing long before it starts generalizing. Watching training accuracy climb while test accuracy stalls is the clearest lesson in the project. Regularization stops being a chapter in a textbook and becomes something you add because you can see the gap.
+
+## Inference is one line
+
+After all that, prediction is a single forward pass under `torch.inference_mode()`: image in, ten logits out, softmax to probabilities, argmax to a label. The gap between "training a model" and "using a model" is enormous, and doing both by hand makes that gap concrete.
+
+If you are learning deep learning, fine-tune a backbone for your resume. But train one tiny network from scratch first, on a CPU, watching every epoch. You will never read an architecture diagram the same way again.
