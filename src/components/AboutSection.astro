@@ -3,42 +3,42 @@ import SectionHeading from './SectionHeading.astro';
 import { profile } from '../data/profile';
 
 const facts = [
-  { term: 'education', value: `${profile.education.degree}`, sub: `${profile.education.school} · ${profile.education.period}` },
-  { term: 'focus', value: 'AI systems · ML · backend · computer vision', sub: 'the intersection I keep returning to' },
-  { term: 'currently', value: 'building RAG apps & backend services', sub: 'studying transformers & computer vision' },
-  { term: 'based in', value: profile.location, sub: 'open to remote work & collaboration' },
+  {
+    term: 'education',
+    value: profile.education.degree,
+    sub: `${profile.education.school} · ${profile.education.period}`,
+  },
+  { term: 'focus', value: 'AI systems · ML · backend · computer vision' },
+  { term: 'currently', value: 'building RAG apps & backend services' },
+  { term: 'based in', value: profile.location },
 ];
 ---
 
 <section id="about" class="mx-auto w-full max-w-5xl px-6 py-20">
-  <SectionHeading index="01" title="About" note="// theory ↔ implementation" />
+  <SectionHeading title="About" />
 
   <div class="grid gap-12 lg:grid-cols-[1.5fr_1fr]">
     <div data-reveal class="space-y-5 text-base leading-relaxed text-ink-2">
       <p>
-        I'm a Computer Science graduate at the {profile.education.school}, interested in how
-        intelligent software systems <strong class="font-medium text-ink">actually work</strong>,
-        not just how to call them. That runs in both directions: I'll study the mathematics behind
-        attention mechanisms, then turn around and build an application on top of an LLM or a
-        retrieval system.
+        I recently finished my Computer Science degree at the {profile.education.school}, where I
+        got hooked on how intelligent software
+        <strong class="font-medium text-ink">actually works</strong>, not just how to call it.
+        That curiosity runs both ways: I'll derive the mathematics behind attention, then turn
+        around and ship an application on top of an LLM.
       </p>
       <p>
-        Most of what I build sits at the intersection of AI systems and software engineering:
-        retrieval-augmented generation pipelines from document loading to grounded generation,
-        containerized backend services with an event-driven core, and convolutional networks
-        trained end to end in PyTorch.
+        The work I reach for sits where AI systems meet software engineering: retrieval pipelines
+        taken from document loader to grounded answer, backend services that talk through message
+        queues, and convolutional networks trained end to end in PyTorch.
       </p>
       <p>
         I care about the layers underneath: backpropagation, gradient descent, attention
-        mechanics, database internals. Understanding the mechanism is what makes the abstraction
+        mechanics, database internals. Knowing the mechanism is what makes the abstraction
         trustworthy.
-      </p>
-      <p class="pt-1 font-mono text-xs text-accent-text">
-        machine learning × software engineering × ai systems
       </p>
     </div>
 
-    <aside data-reveal class="h-fit border-l-2 border-line pl-6">
+    <aside data-reveal style="--reveal-i: 1" class="h-fit border-l-2 border-line pl-6">
       <dl class="space-y-6">
         {
           facts.map((fact) => (
@@ -47,7 +47,7 @@ const facts = [
                 {fact.term}
               </dt>
               <dd class="mt-1 text-sm font-medium text-ink">{fact.value}</dd>
-              <dd class="mt-0.5 text-sm text-ink-2">{fact.sub}</dd>
+              {fact.sub && <dd class="mt-0.5 text-sm text-ink-2">{fact.sub}</dd>}
             </div>
           ))
         }
