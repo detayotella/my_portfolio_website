@@ -3,25 +3,31 @@ import { profile } from '../data/profile';
 import TerminalCard from './TerminalCard.astro';
 ---
 
-<section class="relative overflow-hidden">
+<!-- 100dvh hero: text left, terminal right, one accent word in the display headline.
+     Gradient word = intentional: the terminal cursor motif carried into the type. -->
+<section class="relative flex min-h-[100dvh] items-center overflow-hidden pt-20">
   <div
     class="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]"
     aria-hidden="true"
   >
   </div>
 
-  <div class="relative mx-auto w-full max-w-5xl px-6 pb-20 pt-14 sm:pt-20 lg:pb-24">
+  <div class="relative mx-auto w-full max-w-5xl px-6 py-16">
     <div class="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
-      <div>
+      <div data-reveal>
         <p class="font-mono text-xs text-ink-3 sm:text-sm">
           <span class="text-accent-text">$</span>
-          {profile.name.toLowerCase()} · computer science @ fut minna
+          {profile.name.toLowerCase()} · {profile.education.school}
         </p>
-        <h1 class="mt-5 max-w-xl text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl">
-          {profile.statement}
+        <h1
+          class="mt-5 max-w-xl font-display text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]"
+        >
+          I build <span class="text-accent">intelligent systems</span> and study how they
+          work.
         </h1>
-        <p class="mt-6 max-w-lg text-base leading-relaxed text-ink-2">
-          {profile.support}
+        <p class="mt-6 max-w-md text-base leading-relaxed text-ink-2">
+          ML pipelines, retrieval systems, and CNNs trained from scratch, with the backend
+          engineering to ship them.
         </p>
         <div class="mt-8 flex flex-wrap items-center gap-3">
           <a href="/#projects" class="btn btn-primary">View projects</a>
@@ -31,10 +37,11 @@ import TerminalCard from './TerminalCard.astro';
             target="_blank"
             rel="noopener noreferrer">GitHub ↗</a
           >
-          <a href="/#contact" class="btn btn-secondary">Contact</a>
         </div>
       </div>
-      <TerminalCard />
+      <div data-reveal style="--reveal-i: 1">
+        <TerminalCard />
+      </div>
     </div>
   </div>
 </section>
