@@ -4,22 +4,27 @@ import Tag from './Tag.astro';
 
 interface Props {
   project: CollectionEntry<'projects'>;
+  index?: number;
+  class?: string;
 }
 
-const { project } = Astro.props;
+const { project, index = 0, class: className = '' } = Astro.props;
 ---
 
 <article
-  data-reveal
-  class="group flex flex-col rounded-md border border-line bg-surface p-6 transition-colors hover:border-line-strong"
+  data-reveal-child
+  class:list={[
+    'lift group flex flex-col rounded-xl border border-line bg-surface p-6',
+    className,
+  ]}
 >
   <p class="font-mono text-[11px] text-ink-3" aria-hidden="true">
-    p.{String(project.data.order).padStart(2, '0')}
+    p.{String(index || project.data.order).padStart(2, '0')}
   </p>
-  <h3 class="mt-2 text-lg font-semibold tracking-tight">
+  <h3 class="mt-2 font-display text-lg font-semibold tracking-tight">
     <a
       href={`/projects/${project.id}/`}
-      class="transition-colors after:absolute after:inset-0 group-hover:text-accent-text"
+      class="transition-colors duration-150 ease-out after:absolute after:inset-0 group-hover:text-accent-text"
     >
       {project.data.title}
     </a>
