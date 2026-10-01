@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import Tag from '../../components/Tag.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -20,15 +21,19 @@ const others = (await getCollection('projects'))
 
 <Base title={`${project.data.title} · Adetayo Tella`} description={project.data.summary}>
   <SiteHeader />
-  <main id="main" class="mx-auto w-full max-w-3xl px-6 py-14 sm:py-16">
+  <main id="main" class="mx-auto w-full max-w-3xl px-6 pt-28 sm:pt-32">
     <nav class="font-mono text-xs text-ink-3" aria-label="Breadcrumb">
-      <a href="/#projects" class="transition-colors hover:text-ink">~/projects</a>
+      <a href="/#projects" class="transition-colors duration-150 ease-out hover:text-ink">
+        ~/projects
+      </a>
       <span aria-hidden="true"> / </span>
       <span class="text-ink-2">{project.id}</span>
     </nav>
 
     <header class="mt-8">
-      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">{project.data.title}</h1>
+      <h1 class="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
+        {project.data.title}
+      </h1>
       {
         project.data.subtitle && (
           <p class="mt-2 font-mono text-xs text-ink-3" aria-hidden="true">
@@ -58,19 +63,19 @@ const others = (await getCollection('projects'))
       <Content />
     </article>
 
-    <nav class="mt-16 border-t border-line pt-8" aria-label="More projects">
-      <p class="font-mono text-[11px] uppercase tracking-[0.15em] text-ink-3">more projects</p>
-      <ul class="mt-4 space-y-2.5">
+    <nav class="mt-16" aria-label="More projects">
+      <h2 class="font-display text-xl font-semibold tracking-tight">More projects</h2>
+      <div data-reveal-group class="mt-6 grid gap-5 sm:grid-cols-2">
         {
-          others.map((other) => (
-            <li>
-              <a class="link text-sm" href={`/projects/${other.id}/`}>
-                {other.data.title} →
-              </a>
-            </li>
+          others.map((other, i) => (
+            <ProjectCard
+              project={other}
+              index={i + 1}
+              class={others.length % 2 === 1 && i === others.length - 1 ? 'sm:col-span-2' : ''}
+            />
           ))
         }
-      </ul>
+      </div>
     </nav>
   </main>
   <SiteFooter />
