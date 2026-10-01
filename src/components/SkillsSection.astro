@@ -5,12 +5,12 @@ import { skillGroups } from '../data/skills';
 ---
 
 <section id="skills" class="mx-auto w-full max-w-5xl px-6 py-20">
-  <SectionHeading index="03" title="Technical Skills" note="// ordered by relevance, not proficiency" />
+  <SectionHeading title="Technical Skills" />
 
-  <div class="grid gap-x-12 gap-y-10 md:grid-cols-2">
+  <div data-reveal-group class="grid gap-x-12 gap-y-10 md:grid-cols-2">
     {
       skillGroups.map((group) => (
-        <div data-reveal>
+        <div data-reveal-child>
           <h3 class="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-3">
             {group.label}
           </h3>
