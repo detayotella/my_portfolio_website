@@ -1,6 +1,7 @@
 ---
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/space-grotesk';
 import '../styles/global.css';
 import { profile, site } from '../data/profile';
 
@@ -10,12 +11,16 @@ interface Props {
 }
 
 const { title = site.title, description = site.description } = Astro.props;
+const ogTitle = title === site.title ? profile.name : title;
 
 const jsonLd = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: profile.name,
-  jobTitle: 'Computer Science graduate',
+  jobTitle: 'Computer Science graduate · AI/ML engineer',
+  email: `mailto:${profile.email}`,
+  url: profile.github,
+  sameAs: [profile.github, profile.linkedin],
   affiliation: { '@type': 'CollegeOrUniversity', name: profile.education.school },
   knowsAbout: [
     'Machine Learning',
@@ -40,16 +45,19 @@ const jsonLd = JSON.stringify({
     <meta name="author" content={profile.name} />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={profile.github} />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={profile.name} />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content="/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
+    <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content="/og.png" />
+    <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131110" media="(prefers-color-scheme: dark)" />
 
     <!-- set theme before first paint to avoid a flash of the wrong theme -->
     <script is:inline>
@@ -68,10 +76,19 @@ const jsonLd = JSON.stringify({
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
 
-    <!-- scroll reveal: progressive enhancement, content is fully visible without JS -->
+    <!-- progressive enhancement: content is fully visible without JS.
+         Stagger: children of a [data-reveal-group] get --reveal-i = their index,
+         so grids enter as a 60ms cascade instead of one block. -->
     <script is:inline>
       document.documentElement.classList.add('js');
-      const targets = document.querySelectorAll('[data-reveal]');
+
+      document.querySelectorAll('[data-reveal-group]').forEach((group) => {
+        group.querySelectorAll(':scope > [data-reveal-child]').forEach((child, i) => {
+          child.style.setProperty('--reveal-i', String(Math.min(i, 8)));
+        });
+      });
+
+      const revealTargets = document.querySelectorAll('[data-reveal], [data-reveal-group]');
       if ('IntersectionObserver' in window) {
         const io = new IntersectionObserver(
           (entries) => {
@@ -84,9 +101,33 @@ const jsonLd = JSON.stringify({
           },
           { threshold: 0.08, rootMargin: '0px 0px -48px 0px' }
         );
-        targets.forEach((t) => io.observe(t));
+        revealTargets.forEach((t) => io.observe(t));
       } else {
-        targets.forEach((t) => t.classList.add('is-visible'));
+        revealTargets.forEach((t) => t.classList.add('is-visible'));
+      }
+
+      // scroll spy: underline the nav link for the section currently on screen
+      const links = document.querySelectorAll('[data-spy]');
+      if (links.length && 'IntersectionObserver' in window) {
+        const byId = new Map();
+        links.forEach((l) => byId.set((l.getAttribute('href') || '').replace(/^\/?#/, ''), l));
+        const spy = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              const link = byId.get(entry.target.id);
+              if (!link) continue;
+              if (entry.isIntersecting) {
+                links.forEach((l) => l.removeAttribute('aria-current'));
+                link.setAttribute('aria-current', 'true');
+              }
+            }
+          },
+          { rootMargin: '-40% 0px -55% 0px' }
+        );
+        byId.forEach((_, id) => {
+          const el = document.getElementById(id);
+          if (el) spy.observe(el);
+        });
       }
     </script>
   </body>
