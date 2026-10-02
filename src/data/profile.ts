@@ -9,7 +9,7 @@ export const profile = {
   role: 'Computer Science graduate · AI/ML engineer',
   statement: 'I build intelligent systems and study how they work.',
   support:
-    'ML pipelines, retrieval systems, and CNNs trained from scratch, moving between the mathematics of how models learn and the engineering that ships them.',
+    'I work across AI research and engineering, building machine learning pipelines and retrieval systems while exploring the mathematics of how models learn and turning research ideas into reliable, practical applications.',
   education: {
     school: 'Federal University of Technology, Minna',
     degree: 'B.Tech, Computer Science',
