@@ -410,10 +410,22 @@ body {
 }
 .case pre code {
   background: none;
-  color: var(--ink-2);
+  color: var(--ink);
   padding: 0;
   font-size: 0.84rem;
   line-height: 1.7;
+}
+
+/* shiki paints fenced blocks with its own inline theme colors (github-dark),
+   which fight the notebook palette and fail contrast once .case overrides the
+   text color. Keep the site's surface + ink in both themes instead; the repo
+   tree diagrams are plaintext, so flat ink is their correct rendering. */
+.case pre.astro-code {
+  background-color: var(--surface) !important;
+  color: var(--ink) !important;
+}
+.case pre.astro-code code span {
+  color: inherit !important;
 }
 .case table {
   width: 100%;
